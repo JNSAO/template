@@ -331,13 +331,8 @@
 % Date
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\RequirePackage{scrdate}
-\date{\ISOToday}
-
-% Over-ride \today with \ISOdate when we insert it. This is needed because Babel
-% reset \date{\ISOToday} into a locale format.
-\def\jnsao@insertdate{{\let\today\ISOToday\@date}}
-%\def\date#1{\gdef\@date{\let\today\ISOToday#1}}
+\RequirePackage[style=iso]{datetime2}
+\def\jnsao@insertdate{\DTMtoday}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Publication information
