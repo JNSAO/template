@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+      paths-ignore:
+        - 'README.md'
+        - '00README.json'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        texlive: [2025, 2026]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v4.4.0
+        with:
+          package_file: .github/tlpackages
+          texlive_version: ${{matrix.texlive}}
+
+      - name: Build
+        run: |
+          latexmk -pdflatex jnsao_template
+          mv jnsao_template.pdf jnsao_template-${{matrix.texlive}}.pdf
+
+      - uses: actions/upload-artifact@v7
+        with:
+          path: jnsao_template-${{matrix.texlive}}.pdf
+          archive: false

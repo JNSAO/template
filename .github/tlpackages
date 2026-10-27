@@ -1,0 +1,19 @@
+scheme-basic latexmk
+koma-script
+caption
+datetime2
+inconsolata
+keytheorems
+lastpage
+libertine
+lineno
+mathtools
+microtype
+newtx
+textcase
+translations
+truncate
+upquote
+xcolor
+xstring
+zref-clever
