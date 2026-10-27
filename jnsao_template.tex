@@ -1,0 +1,187 @@
+%% jnsao_template.tex
+%
+% Template to demonstrate the use of the LaTeX class for the
+%
+%    Journal of Nonsmooth Analysis and Optimization
+%
+% Web: http://jnsao.episciences.org
+% E-mail: jnsao@episciences.org
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[english,review]{jnsao}
+\usepackage[utf8]{inputenc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set up cleveref for nicer referencing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[nameinlink,capitalize]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% New theorem-like environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\theoremstyle{definition}
+%\newtheorem{assumption}[theorem]{Assumption}
+
+%\theoremstyle{theorem}
+%\newtheorem{conjecture}[theorem]{Conjecture}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Manuscript information.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\jnsao{\textsc{jnsao}}
+
+% Manuscript title.
+% To ensure that PDF metadata is added without errors, if using LaTeX
+% commands within \title, provide a text-only alternative using
+% \texorpdfstring{tex string}{plain string}
+\title{A helpful template for the \texorpdfstring{{\jnsao} {\LaTeX}}{JNSAO LaTeX} style}
+
+% Manuscript date.
+% Use ISO-8601 standard yyyy-mm-dd date format.
+%\date{\ISOToday}
+
+% Authorship.
+% Give affiliations and contact information using \thanks.
+% \shortauthor is a plain surname-only version for running heads.
+\author{Managing editors of the Journal of Nonsmooth Analysis and Optimization%
+    \thanks{\email{jnsao@episciences.org}}}
+\shortauthor{\jnsao{} managing editors}
+
+% Acknowledgements: funding, etc.
+\acknowledgements{
+    The managing editors would like to express gratitude to everyone
+    involved in this project.
+}
+
+% Licensing information
+%\manuscriptcopyright{{\copyright} the authors}
+%\manuscriptlicense{CC-BY-SA 4.0}
+
+% Fill this information once accepted for publication and the information
+% is provided by the editors
+%\manuscriptsubmitted{2018-12-14}
+%\manuscriptaccepted{2018-12-14}
+%\manuscriptvolume{1}
+%\manuscriptnumber{0}
+%\manuscriptyear{2018}
+%\manuscriptdoi{not_assigned}
+
+%% You can also set the following information to include the eprint
+%% information in the header
+%\manuscripteprinttype{arXiv}
+%\manuscripteprint{1901.00001}
+%\manuscripteprinttype{HAL}
+%\manuscripteprint{hal--01969102}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+\begin{abstract}
+    The abstract goes here.
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This is a {\LaTeX} \cite{lamport1994latex} template for you to use for writing articles for the Journal of Nonsmooth Analysis and Optimization (\jnsao).
+
+\section{Document options}
+
+The class provides the document option \verb!review! to add line numbers for easier reference in review reports.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Packages}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The \jnsao{} class is built using standard \LaTeX{} classes and styles (\verb!scrartcl! from KOMA-Script and \verb!amsmath! and \verb!amsthm! from the AMS; we refer to the standard documentation for these classes). Any package compatible with these can be used. Beside the fonts, the following packages are loaded in the class file to provide the layout:
+\begin{itemize}
+    \item \verb!hyperref!
+    \item \verb!caption!
+    \item \verb!subcaption!
+\end{itemize}
+Especially the last two should be noted since they are not fully compatible with other, similar, packages such as \verb!subfig! or \verb!subfigure!.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Document information}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Author and title}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+mention \orcid{}
+
+funding footnote?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Publication information}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{References}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+It is strongly recommended to use \verb!BibTex! together with the provided bibliography style \verb!jnsao.bst!. This style has been adapted as follows:
+
+\begin{enumerate}
+    \item Similarly to \verb!biblatex!, the case of titles is \emph{not} adjusted. Authors should check their bibliography file and make sure to use 
+        \begin{enumerate}
+            \item \emph{Title Case} for journal, book, and thesis titles;
+            \item \emph{Sentence case} for individual contributions (articles, chapters etc.)
+        \end{enumerate}
+        On the other hand, it is not necessary to escape capital letters in, e.g., proper names by braces (\verb!{N}ewton!).
+
+    \item The style allows the alternate fields \verb!date! (for \verb!year!) and \verb!journaltitle! (for \verb!journal!) to allow sharing bibliography files with \verb!biblatex!.
+
+    \item There is explicit support for preprints on arXiv or HAL. The corresponding bibliography entries should be formatted as
+        \begin{quote}
+            \begin{verbatim}@article{arxiv,
+    title={An interesting result in nonsmooth analysis},
+    author={Author, Anne and Coauthor, Carl},
+    journal={arXiv},
+    year={2019},
+    eprinttype={arxiv},
+    eprint={1903.00000},
+}\end{verbatim}
+        \end{quote}
+        see \cite{arxiv}, or 
+        \begin{quote}
+            \begin{verbatim}@article{HAL,
+    title={Another interesting result in nonsmooth analysis},
+    author={Author, Anne and Coauthor, Carl},
+    journal={HAL},
+    year={2019},
+    eprinttype={hal},
+    eprint={00000000},
+}\end{verbatim}
+        \end{quote}
+        see \cite{HAL}.
+
+        Note that the specific version cited should always be included in the reference!
+
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Compiling on arXiv}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If you use this class to submit to arXiv, it is \emph{necessary} to include the provided \verb!00README.json! file in your submission.
+
+\nocite{*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{jnsao}
+\bibliography{jnsao_template}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
