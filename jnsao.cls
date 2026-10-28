@@ -511,7 +511,10 @@
   \setparsizes{\z@}{\z@}{\z@\@plus 1fil}\par@updaterelative
   \null
   \vskip 2em%
-  \if\jnsao@ack\empty\else\jnsao@insert@ack\fi%
+  \ifx\jnsao@ack\empty
+  \else
+  \jnsao@insert@ack
+  \fi
   \begin{center}%
     {\usekomafont{title}{\huge \MakeLowercase{\@title} \par}}%
     \vskip .5em
