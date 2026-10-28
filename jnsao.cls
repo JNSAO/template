@@ -472,7 +472,7 @@
         }%
         \hfill%
         \parbox[b][\jnsao@firstpagehead][t]{0.25\textwidth}{%
-            \hfill page~1~of~\pageref*{LastPage}\\%
+            \hfill page~\thepage~of~\pageref*{LastPage}\\%
             \null\hfill\jnsao@copyright
             \ifx\jnsao@license\empty{\relax}
             \else{, \jnsao@linklicense{\jnsao@license}}
