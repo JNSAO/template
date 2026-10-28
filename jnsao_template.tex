@@ -95,6 +95,22 @@ The \jnsao{} class is built using standard \LaTeX{} classes and styles (\verb!sc
 \end{itemize}
 Especially the last two should be noted since they are not fully compatible with other, similar, packages such as \verb!subfig! or \verb!subfigure!.
 
+\subsection{References}
+
+The class uses \verb!zref-clever! for handling references to environments and other counters, as \verb!cleveref! is no longer maintained. We provide \verb!\cref!, \verb!\Cref!, and the corresponding \verb!\crefrange! compatibility commands.
+
+\begin{theorem}\label{thm}
+    A theorem.
+\end{theorem}
+\begin{lemma}\label{lem}
+    A lemma.
+\end{lemma}
+\begin{corollary}\label{cor}
+    A corollary.
+\end{corollary}
+
+See \cref{thm,lem,cor}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Document information}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,7 +131,7 @@ funding footnote?
 \section{References}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-It is strongly recommended to use \verb!BibTex! together with the provided bibliography style \verb!jnsao.bst!. This style has been adapted as follows:
+It is strongly recommended to use \verb!BibTeX! together with the provided bibliography style \verb!jnsao.bst!. This style has been adapted as follows:
 
 \begin{enumerate}
     \item Similarly to \verb!biblatex!, the case of titles is \emph{not} adjusted. Authors should check their bibliography file and make sure to use 
