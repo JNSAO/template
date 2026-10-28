@@ -643,7 +643,7 @@ FUNCTION {format.eprint}
 FUNCTION {format.doi}
 { doi empty$
     { "" }
-    { "\href{https://dx.doi.org/" doi * "}{\nolinkurl{doi:" * doi "l" change.case$ * "}}" * }
+    { "\href{https://doi.org/" doi * "}{\nolinkurl{doi:" * doi "l" change.case$ * "}}" * }
     if$
 }
 
