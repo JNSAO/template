@@ -575,14 +575,24 @@
 % PDF metadata
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\AtBeginDocument{
-    \begingroup
-    % Override \and and \thanks to clean up author
-    \def\and{ and }
-    \def\thanks#1{\relax}
-    \hypersetup{
-        pdftitle = {\@title},
-        pdfauthor = {\@author},
-    }
-    \endgroup
+% Clean up possible LaTeX code in the author and title
+\pdfstringdefDisableCommands{%
+  \def\thanks#1{}%
+  \def\and{, }%
+  \def\\{, }%
+  \def\email#1{#1}%
+  \def\orcid#1{ORCID #1}%
+  \def\arxiv#1{arXiv:#1}%
+  \def\hal#1{HAL:#1}%
+  \def\doi#1{DOI:#1}%
+  \def\textsc#1{#1}%
+  \def\sffamily{}%
+  \def\scshape{}%
+}
+
+\AtBeginDocument{%
+  \hypersetup{%
+    pdftitle  = {\@title},%
+    pdfauthor = {\@author},%
+  }%
 }
