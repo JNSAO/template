@@ -91,7 +91,7 @@
 \RequirePackage[overload]{textcase}
 
 % Prefix appendices with "Appendix"
-\newcommand{\jnsao@appname}{\relax}
+\newcommand{\jnsao@appname}{}
 \newcommand*{\appendixmore}{%
     \renewcommand{\jnsao@appname}{Appendix~}
     \renewcommand{\thesection}{{\scshape\alph{section}}}
@@ -490,7 +490,6 @@
 
 % \maketitle customisations:
 % - Locally convert \@title to lower case for ``all small caps'' to work right
-% - Reset \@date to stop babel from messing things up with its silly enforced
 %   date formats.
 % - Include acknowledgements before \thanks footnotes
 % This version \@maketitle is simply based on scrartcl.cls with unsupported
