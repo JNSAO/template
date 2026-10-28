@@ -100,7 +100,6 @@
 % section headers in small caps (requires lowercasing)
 \renewcommand*\sectionformat{\MakeLowercase{\jnsao@appname\thesection}\enskip}
 \renewcommand*\subsectionformat{\MakeLowercase{\jnsao@appname\thesubsection}\enskip}
-\renewcommand*\subsectionformat{\MakeLowercase{\jnsao@appname\thesubsection}\enskip}
 \renewcommand*\subsubsectionformat{\upshape\MakeLowercase{\jnsao@appname\thesubsubsection}\enskip}
 
 \let\jnsao@old@section\section
