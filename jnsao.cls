@@ -463,11 +463,11 @@
                 \ifx\jnsao@number\empty{\relax}\else{, \jnsao@number}\fi%
                 \ifx\jnsao@doi\empty{\relax}\else{, \expandafter\doi\expandafter{\jnsao@doi}}\fi%
                 \\%
-                \ifx\jnsao@date\empty{%
-                     \ifx\jnsao@accepted\empty{\relax}\else{Accepted: \jnsao@accepted}\fi%
-                }\else{%
-                    Submitted: \jnsao@submitted\ifx\jnsao@accepted\empty{}\else, accepted: \jnsao@accepted\fi%
-                }\fi%
+                \ifx\jnsao@submitted\empty
+                    \ifx\jnsao@accepted\empty\relax\else Accepted: \jnsao@accepted\fi
+                \else
+                    Submitted: \jnsao@submitted\ifx\jnsao@accepted\empty\else, accepted: \jnsao@accepted\fi
+                \fi
                 \\
             }\fi%
         }%
