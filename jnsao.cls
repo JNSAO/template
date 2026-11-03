@@ -298,8 +298,15 @@
     \jnsao@setheadfoot{\jnsao@headheight}{\jnsao@headsep}{\jnsao@headheight}{\jnsao@headsep}
 }
 
-% Switch to the regular geometry once the first page has been shipped out
-\AddToHookNext{shipout/after}{\jnsao@geometry@otherpages}
+% Switch to the regular geometry once the first page has been built, using the
+% output routine hook (kernel 2025-06-01) at the end of \@outputpage, which is
+% kept by the new tagging code. Since the kernel has already initialized the
+% column height for the next page from the old \textheight at this point,
+% reset it to the new value.
+\AddToHookNext{build/page/after}{%
+    \jnsao@geometry@otherpages
+    \global\@colht\textheight
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Date
