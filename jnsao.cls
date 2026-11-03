@@ -23,10 +23,11 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{jnsao}[2026/10/24 v0.16 JNSAO article]
 
-\DeclareOption{review}{\@reviewtrue}
 \newif\if@review
 \@reviewfalse
+\DeclareOption{review}{\@reviewtrue}
 
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
 \ProcessOptions\relax
 
 \LoadClass[
