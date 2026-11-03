@@ -33,9 +33,9 @@
 \LoadClass[
     a4paper,
     fontsize=11pt,
-    oneside
+    oneside,
+    DIV=12,
 ]{scrartcl}
-\KOMAoptions{DIV=12}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define colors
