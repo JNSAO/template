@@ -375,7 +375,6 @@
 % Headers and footers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\RequirePackage{lastpage}
 \RequirePackage[fit]{truncate}
 
 \addtokomafont{pageheadfoot}{\normalfont\sffamily\footnotesize}
@@ -399,7 +398,7 @@
             \ifx\jnsao@number\empty{\relax}\else{, \jnsao@number}\fi%
         }\fi%
         \hfill%
-        page~\thepage~of~\pageref*{LastPage}%
+        page~\thepage~of~\PreviousTotalPages%
     }}
     \def\@oddfoot{\jnsao@ruledfoot{%
         \truncate{0.5\textwidth}{\ifx\jnsao@shortauthor\empty{}\else{\jnsao@shortauthor}\fi}%
@@ -438,7 +437,7 @@
         }%
         \hfill%
         \parbox[b][\jnsao@firstpagehead][t]{0.25\textwidth}{%
-            \hfill page~\thepage~of~\pageref*{LastPage}\\%
+            \hfill page~\thepage~of~\PreviousTotalPages\\%
             \null\hfill\jnsao@copyright
             \ifx\jnsao@license\empty{\relax}
             \else{, \jnsao@linklicense{\jnsao@license}}
