@@ -100,40 +100,7 @@
 % section headers in small caps (requires lowercasing)
 % do not lowercase arguments of reference commands
 \AddToNoCaseChangeList{\ref \eqref \zcref \zcpageref \pageref \href \url \thanks}
-\renewcommand*\sectionformat{\MakeLowercase{\jnsao@appname\thesection}\enskip}
-\renewcommand*\subsectionformat{\MakeLowercase{\jnsao@appname\thesubsection}\enskip}
-\renewcommand*\subsubsectionformat{\upshape\MakeLowercase{\jnsao@appname\thesubsubsection}\enskip}
-
-\let\jnsao@old@section\section
-\renewcommand*{\section}{%
-    \@ifstar {\star@section}{\@dblarg\nonstar@section}%
-}
-\newcommand*{\star@section}[1]{%
-    \jnsao@old@section*{\MakeLowercase{#1}}%
-}
-\newcommand*{\nonstar@section}[2][]{%
-    \jnsao@old@section[{#1}]{\MakeLowercase{#2}}%
-}
-\let\jnsao@old@subsection\subsection
-\renewcommand*{\subsection}{%
-    \@ifstar {\star@subsection}{\@dblarg\nonstar@subsection}%
-}
-\newcommand*{\star@subsection}[1]{%
-    \jnsao@old@subsection*{\MakeLowercase{#1}}%
-}
-\newcommand*{\nonstar@subsection}[2][]{%
-    \jnsao@old@subsection[{#1}]{\MakeLowercase{#2}}%
-}
-\let\jnsao@old@subsubsection\subsubsection
-\renewcommand*{\subsubsection}{%
-    \@ifstar {\star@subsubsection}{\@dblarg\nonstar@subsubsection}%
-}
-\newcommand*{\star@subsubsection}[1]{%
-    \jnsao@old@subsubsection*{\MakeLowercase{#1}}%
-}
-\newcommand*{\nonstar@subsubsection}[2][]{%
-    \jnsao@old@subsubsection[{#1}]{\MakeLowercase{#2}}%
-}
+\renewcommand*{\sectionlinesformat}[4]{\@hangfrom{\hskip #2#3}{\MakeLowercase{#4}}}
 
 % Format (sub) figure labels
 \RequirePackage[labelfont={color=structure,sf}]{caption}
