@@ -98,6 +98,8 @@
 }
 
 % section headers in small caps (requires lowercasing)
+% do not lowercase arguments of reference commands
+\AddToNoCaseChangeList{\ref \eqref \zcref \zcpageref \pageref \href \url \thanks}
 \renewcommand*\sectionformat{\MakeLowercase{\jnsao@appname\thesection}\enskip}
 \renewcommand*\subsectionformat{\MakeLowercase{\jnsao@appname\thesubsection}\enskip}
 \renewcommand*\subsubsectionformat{\upshape\MakeLowercase{\jnsao@appname\thesubsubsection}\enskip}
@@ -242,7 +244,7 @@
     }
 
 % Change font for \thanks
-\def\thanks#1{\footnotemark
+\protected\def\thanks#1{\footnotemark
     \protected@xdef\@thanks{\@thanks
         \protect\jnsao@thankstext[\the\c@footnote]{\sffamily #1}}%
 }
