@@ -279,7 +279,7 @@
 
 % \@outputpage hack to reset settings after first page
 \let\jnsao@old@outputpage\@outputpage
-\def\jnsao@output@firstpage{
+\def\jnsao@output@firstpage{%
     \jnsao@old@outputpage%
     \jnsao@geometry@otherpages%
     % This is needed for something to actually happen after the reset above,
