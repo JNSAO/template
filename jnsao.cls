@@ -359,7 +359,6 @@
 \newcommand{\manuscriptaccepted}[1]{\gdef\jnsao@accepted{#1}}
 \newcommand{\manuscriptvolume}[1]{\gdef\jnsao@volume{#1}}
 \newcommand{\manuscriptnumber}[1]{\gdef\jnsao@number{#1}}
-\newcommand{\manuscriptjournal}[1]{\gdef\jnsao@journal{#1}}
 \newcommand{\manuscriptlicense}[1]{\gdef\jnsao@license{#1}}
 \newcommand{\manuscriptcopyright}[1]{\gdef\jnsao@copyright{#1}}
 \newcommand{\manuscriptyear}[1]{\gdef\jnsao@year{#1}}
