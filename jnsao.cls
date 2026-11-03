@@ -503,7 +503,7 @@
     \splitmaxdepth \dp\strutbox \floatingpenalty \@MM%
     \hsize\columnwidth \@parboxrestore%
     \color@begingroup%
-    \hb@xt@1.8em{\rule\z@\footnotesep\ignorespaces\parbox[t]{\textwidth}{\jnsao@ack}\@finalstrut\strutbox}%
+    \hb@xt@\columnwidth{\rule\z@\footnotesep\ignorespaces\parbox[t]{\textwidth}{\jnsao@ack}\hss}%
     \color@endgroup}}
 
 \renewcommand*{\@maketitle}{%
