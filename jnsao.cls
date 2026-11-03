@@ -523,7 +523,7 @@
 \providecommand{\hal}[1]{\href{https://hal.archives-ouvertes.fr/#1}{#1}}
 \providecommand{\doi}[1]{\mbox{\scshape\sffamily doi:}\,\href{https://doi.org/#1}{\detokenize{#1}}}
 \providecommand{\orcid}[1]{\mbox{\scshape\sffamily orcid:}\,\href{https://orcid.org/#1}{\detokenize{#1}}}
-\def\email#1{\href{mailto:#1}{\sffamily#1}}
+\providecommand\email[1]{\href{mailto:#1}{\sffamily#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % review option: line numbers
