@@ -20,7 +20,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\NeedsTeXFormat{LaTeX2e}
+\NeedsTeXFormat{LaTeX2e}[2025-06-01] % required by keytheorems
 \ProvidesClass{jnsao}[2026/10/24 v0.16 JNSAO article]
 
 \newif\if@review
@@ -88,16 +88,16 @@
 \addtokomafont{subsection}{\scshape}
 \addtokomafont{subsubsection}{\scshape\itshape}
 
-% Prefix appendices with "Appendix"
-\newcommand{\jnsao@appname}{}
+% Number appendices by small caps letters, prefix (only) sections by "appendix"
+% (lowercase for small caps like the rest of the heading)
 \newcommand*{\appendixmore}{%
-    \renewcommand{\jnsao@appname}{Appendix~}
-    \renewcommand{\thesection}{{\scshape\alph{section}}}
+    \renewcommand{\thesection}{\textsc{\alph{section}}}%
+    \renewcommand*{\sectionformat}{appendix~\thesection\autodot\enskip}%
 }
 
 % section headers in small caps (requires lowercasing)
 % do not lowercase arguments of reference commands
-\AddToNoCaseChangeList{\ref \eqref \zcref \zcpageref \pageref \href \url \thanks}
+\AddToNoCaseChangeList{\ref \eqref \pageref \href \url \thanks}
 \renewcommand*{\sectionlinesformat}[4]{\@hangfrom{\hskip #2#3}{\MakeLowercase{#4}}}
 
 % Format (sub) figure labels
@@ -117,6 +117,27 @@
 \newcommand{\Cref}[1]{\zcref[S]{#1}}
 \newcommand{\crefrange}[2]{\zcref[range]{#1,#2}}
 \newcommand{\Crefrange}[2]{\zcref[S,range]{#1,#2}}
+% Protect zref-clever commands from lowercasing in section headers: the case
+% change exclusion list only protects the first braced argument, so star and
+% options (e.g., \zcref[S]{...}) would be lowercased. Instead, before the case
+% change replace them by an expandable wrapper that hides the full command
+% (including star and options, i.e., everything up to the braced argument)
+% inside a single excluded argument. Since the reference text is then not
+% lowercased, force lowercase reference names (overriding, e.g., S).
+\protected\long\def\jnsao@nocase#1{#1}
+\AddToNoCaseChangeList{\jnsao@nocase}
+\def\jnsao@nocase@cmd#1#2#{\jnsao@nocase@cmd@{#1#2}}
+\def\jnsao@nocase@cmd@#1#2{\jnsao@nocase{\jnsao@zcref@lc#1{#2}}}
+\NewDocumentCommand\jnsao@zcref@lc{m s O{} m}{%
+  \IfBooleanTF{#2}{#1*}{#1}[#3,cap=false,capfirst=false]{#4}%
+}
+\let\jnsao@zcref\zcref
+\let\jnsao@zcpageref\zcpageref
+\ExplSyntaxOn
+\text_declare_expand_equivalent:Nn \zcref { \jnsao@nocase@cmd \jnsao@zcref }
+\text_declare_expand_equivalent:Nn \zcpageref { \jnsao@nocase@cmd \jnsao@zcpageref }
+\ExplSyntaxOff
+
 \zcsetup{nameinlink}
 \zcLanguageSetup{english}{cap=true} % language-specific so can be overridden
 \zcRefTypeSetup{section}{cap=false}
@@ -187,6 +208,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Store length in base font size
+\RequirePackage{calc}
 \newlength{\jnsao@footnotesep}
 \newlength{\jnsao@footnotetopsep}
 \newlength{\jnsao@standardfootins}
@@ -213,7 +235,7 @@
     \protected@xdef\@thanks{\@thanks
         \protect\jnsao@thankstext[\the\c@footnote]{\sffamily #1}}%
 }
-\def\jnsao@thankstext{\sffamily%
+\def\jnsao@thankstext{%
      \@ifnextchar [\@xfootnotenext
        {\protected@xdef\@thefnmark{\thempfn}%
     \@footnotetext}}
@@ -276,7 +298,6 @@
     \jnsao@setheadfoot{\jnsao@headheight}{\jnsao@headsep}{\jnsao@headheight}{\jnsao@headsep}
 }
 
-\RequirePackage{calc}
 % Switch to the regular geometry once the first page has been shipped out
 \AddToHookNext{shipout/after}{\jnsao@geometry@otherpages}
 
@@ -293,7 +314,6 @@
 
 \let\jnsao@submitted\empty
 \let\jnsao@accepted\empty
-\let\jnsao@journal\empty
 \let\jnsao@volume\empty
 \let\jnsao@number\empty
 \let\jnsao@year\empty
@@ -303,7 +323,6 @@
 \let\jnsao@shortauthor\empty
 \let\jnsao@shorttitle\empty
 \let\jnsao@ack\empty
-\def\jnsao@journal{Journal of Nonsmooth Analysis and Optimization}
 \def\jnsao@journalabbrev{J.~Nonsmooth Anal.~Optim.}
 \def\jnsao@license{CC-BY-SA 4.0}
 \def\jnsao@copyright{{\copyright} the authors}
@@ -388,6 +407,7 @@
         page~\thepage~of~\PreviousTotalPages%
     }}
     \def\@oddfoot{\jnsao@ruledfoot{%
+        \let\thanks\@gobble% \@title may contain \thanks
         \truncate{0.5\textwidth}{\ifx\jnsao@shortauthor\empty{}\else{\jnsao@shortauthor}\fi}%
         \hfill%
         \truncate{0.5\textwidth}{\ifx\jnsao@shorttitle\empty{\@title}\else{\jnsao@shorttitle}\fi}%
@@ -415,9 +435,9 @@
                 \ifx\jnsao@doi\empty{\relax}\else{, \expandafter\doi\expandafter{\jnsao@doi}}\fi%
                 \\%
                 \ifx\jnsao@submitted\empty
-                    \ifx\jnsao@accepted\empty\relax\else Accepted: \jnsao@accepted\fi
+                    Accepted: \jnsao@accepted
                 \else
-                    Submitted: \jnsao@submitted\ifx\jnsao@accepted\empty\else, accepted: \jnsao@accepted\fi
+                    Submitted: \jnsao@submitted, accepted: \jnsao@accepted
                 \fi
                 \\
             }\fi%
@@ -541,9 +561,13 @@
   \def\scshape{}%
 }
 
-\AtBeginDocument{%
+% Set at begin document and again at \maketitle in case \title or \author
+% are given (or changed) after \begin{document}
+\def\jnsao@pdfmetadata{%
   \hypersetup{%
     pdftitle  = {\@title},%
     pdfauthor = {\@author},%
   }%
 }
+\AtBeginDocument{\jnsao@pdfmetadata}
+\AddToHook{cmd/maketitle/before}{\jnsao@pdfmetadata}
