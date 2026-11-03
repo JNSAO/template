@@ -219,9 +219,7 @@
     \@footnotetext}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Vertical alignment. This hacks and wraps \@outputpage and
-% and latex.ltx limitations to have different geometry for
-% the first page
+% Vertical alignment: different first and other page layout
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Flush to bottom
@@ -278,20 +276,9 @@
     \jnsao@setheadfoot{\jnsao@headheight}{\jnsao@headsep}{\jnsao@headheight}{\jnsao@headsep}
 }
 
-% \@outputpage hack to reset settings after first page
-\let\jnsao@old@outputpage\@outputpage
-\def\jnsao@output@firstpage{%
-    \jnsao@old@outputpage%
-    \jnsao@geometry@otherpages%
-    % This is needed for something to actually happen after the reset above,
-    % as standard \@outputpage does the same thing at the end
-    \global\@colht\textheight%
-    % Reset page output routine
-    \global\let\jnsao@output@page\jnsao@old@outputpage%
-}
-
-\def\@outputpage{\jnsao@output@page}
-\let\jnsao@output@page\jnsao@output@firstpage
+\RequirePackage{calc}
+% Switch to the regular geometry once the first page has been shipped out
+\AddToHookNext{shipout/after}{\jnsao@geometry@otherpages}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Date
