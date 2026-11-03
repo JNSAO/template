@@ -87,9 +87,6 @@
 \addtokomafont{subsection}{\scshape}
 \addtokomafont{subsubsection}{\scshape\itshape}
 
-% title in small caps (requires lowercasing, label abstract
-\RequirePackage[overload]{textcase}
-
 % Prefix appendices with "Appendix"
 \newcommand{\jnsao@appname}{}
 \newcommand*{\appendixmore}{%
