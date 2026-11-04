@@ -11,9 +11,10 @@
 % front matter in the preamble, and replace the body by your manuscript.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \DocumentMetadata{tagging=on}
 
 % Options: `review` adds line numbers (recommended for submission). All other
-% options are passed to scrartcl (here: the document language).
+% options are passed to article (here: the document language).
 \documentclass[english,review]{jnsao}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,13 +117,13 @@
 \section{Introduction}\label{sec:intro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The \jnsao{} class \pkg{jnsao.cls} is based on \pkg{scrartcl} from KOMA-Script and requires pdf\LaTeX{} and a recent \TeX{} distribution (\TeX{} Live 2025 or newer). To start, copy \pkg{jnsao\_template.tex}, \pkg{jnsao.cls}, and \pkg{jnsao.bst} to your project folder and replace the front matter and the body of the template by your own; see the comments in the source for details. Layout (paper size, font size, type area, fonts, headings, headers and footers) is fixed by the class and should not be changed.
+The \jnsao{} class \pkg{jnsao.cls} is based on the standard \pkg{article} class and requires pdf\LaTeX{} or Lua\LaTeX{} (see \zcref{sec:packages}) and a recent \TeX{} distribution (\TeX{} Live 2025 or newer). To start, copy \pkg{jnsao\_template.tex}, \pkg{jnsao.cls}, and \pkg{jnsao.bst} to your project folder and replace the front matter and the body of the template by your own; see the comments in the source for details. Layout (paper size, font size, type area, fonts, headings, headers and footers) is fixed by the class and should not be changed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Class options}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The option \pkg{review} adds line numbers for easier reference in review reports; please use it for submissions. All other options are passed on to \pkg{scrartcl}; in particular, a language option such as \pkg{english} sets the language for automatic reference names (see \zcref{sec:references}).
+The option \pkg{review} adds line numbers for easier reference in review reports; please use it for submissions. All other options are passed on to \pkg{article}; in particular, a language option such as \pkg{english} sets the language for automatic reference names (see \zcref{sec:references}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Front matter}\label{sec:frontmatter}
@@ -163,14 +164,16 @@ The remaining commands in the preamble starting with \cs{manuscript} set the pub
 The class loads the following packages, which therefore should not be loaded again (with different options) or replaced by alternatives:
 \begin{itemize}
     \item \pkg{amsmath} (with options \pkg{leqno} and \pkg{tbtags}, i.e., equation numbers on the left), \pkg{amsthm}, and \pkg{mathtools} (with option \pkg{centercolon});
-    \item \pkg{libertine}, \pkg{newtxmath}, and \pkg{inconsolata} for fonts, as well as \pkg{fontenc} and \pkg{microtype}; do not load other font packages;
+    \item \pkg{libertinus}, \pkg{newtxmath}, and \pkg{noto-mono} for fonts (with \pkg{fontspec} for Lua\LaTeX), as well as \pkg{fontenc} and \pkg{microtype}; do not load other font packages;
+    \item \pkg{geometry} and \pkg{fancyhdr} for the page layout and the headers and footers;
     \item \pkg{xcolor} (with option \pkg{svgnames}) and \pkg{hyperref};
-    \item \pkg{caption} and \pkg{subcaption}, which are incompatible with \pkg{subfig} and \pkg{subfigure};
     \item \pkg{zref-clever} for references, which replaces \pkg{cleveref} (see \zcref{sec:references});
     \item \pkg{keytheorems} for theorems, which replaces \pkg{thmtools} and \pkg{ntheorem} (see \zcref{sec:theorems});
-    \item \pkg{datetime2}, \pkg{truncate}, \pkg{xstring}, and \pkg{lineno} (with option \pkg{review}) for internal purposes.
+    \item \pkg{datetime2}, \pkg{xstring}, and \pkg{lineno} (pdf\LaTeX) or \pkg{lualineno} (Lua\LaTeX) with option \pkg{review} for internal purposes.
 \end{itemize}
-Other packages compatible with \pkg{scrartcl} and the above can be used as usual. Do not load \pkg{geometry} or change page dimensions.
+Other packages compatible with \pkg{article} and the above can be used as usual. Do not change the page dimensions (e.g., with \cs{geometry}).
+
+The class can be used with pdf\LaTeX{} or Lua\LaTeX{}. With Lua\LaTeX, a tagged (accessible) PDF can be produced by adding \verb!\DocumentMetadata{lang=en, tagging=on}! before \verb!\documentclass!; in this case, only packages that are compatible with tagging should be used (see \url{https://latex3.github.io/tagging-project/tagging-status/}). In particular, \pkg{caption} and \pkg{subcaption} are currently not compatible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Mathematics}\label{sec:math}
@@ -287,22 +290,12 @@ References in headings are protected from lowercasing; use \cs{texorpdfstring} t
 \subsection{Figures and tables}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Use the \pkg{subfigure} environment from \pkg{subcaption} for subfigures, as in \zcref{fig:example,fig:example:a}; tables are set as usual (\zcref{tab:example}).
+Figures and tables are set as usual, as in \zcref{fig:example,tab:example}. Subfigures (e.g., with the \pkg{subfigure} environment from \pkg{subcaption}) can be used with pdf\LaTeX{}, but \pkg{subcaption} is currently not compatible with tagging.
 
 \begin{figure}[t]
     \centering
-    \begin{subfigure}{0.45\textwidth}
-        \centering
-        \rule{3cm}{2cm}
-        \caption{First subfigure}\label{fig:example:a}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.45\textwidth}
-        \centering
-        \rule{3cm}{2cm}
-        \caption{Second subfigure}\label{fig:example:b}
-    \end{subfigure}
-    \caption{a figure with two subfigures}\label{fig:example}
+    \rule{3cm}{2cm}
+    \caption{a figure}\label{fig:example}
 \end{figure}
 
 \begin{table}[b]

@@ -21,21 +21,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}[2025-06-01] % required by keytheorems
-\ProvidesClass{jnsao}[2026/11/04 v0.20 JNSAO article]
+\ProvidesClass{jnsao}[2026/11/04 v0.30 JNSAO article]
 
 \newif\if@review
 \@reviewfalse
 \DeclareOption{review}{\@reviewtrue}
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 
-\LoadClass[
-    a4paper,
-    fontsize=11pt,
-    oneside,
-    DIV=12,
-]{scrartcl}
+\LoadClass[a4paper,11pt,oneside]{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define colors
@@ -117,32 +112,159 @@
 \RequirePackage{microtype}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Format: title, sectioning in colored sans smallcaps
+% Tagging (\DocumentMetadata), supported with LuaLaTeX only
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\renewcommand*{\sectfont}{\color{structure}\sffamily}
-\setkomafont{title}{\color{structure}\normalfont\sffamily\scshape}
-\setkomafont{author}{\large\normalfont\sffamily}
-\setkomafont{date}{\large\normalfont\sffamily}
-\addtokomafont{section}{\scshape}
-\addtokomafont{subsection}{\scshape}
-\addtokomafont{subsubsection}{\scshape\itshape}
+\newif\ifjnsao@tagging
+\ifluatex
+  \IfDocumentMetadataTF{%
+    \jnsao@taggingtrue
+    % luamml (MathML generation) requires OpenType math fonts, which are not
+    % used; math is tagged with its LaTeX source instead
+    \tagpdfsetup{math/mathml/luamml/load=false}%
+  }{}
+\else
+  \IfDocumentMetadataTF{%
+    \ClassWarningNoLine{jnsao}{%
+      Tagging (\string\DocumentMetadata) is only supported\MessageBreak
+      with LuaLaTeX}%
+  }{}
+\fi
 
-% Number appendices by small caps letters, prefix (only) sections by "appendix"
-% (lowercase for small caps like the rest of the heading)
-\newcommand*{\appendixmore}{%
-    \renewcommand{\thesection}{\textsc{\alph{section}}}%
-    \renewcommand*{\sectionformat}{appendix~\thesection\autodot\enskip}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Paragraphs and lists
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setlength{\parindent}{1em}
+% nested lists (where \parskip is \parsep of the enclosing list): no extra
+% space around the list and between items, only between paragraphs (also
+% \partopsep, which is otherwise added by the tagging code to nested blocks)
+\newcommand*{\jnsao@listextra}{%
+    \ifdim\parskip>\z@ \topsep\z@ \partopsep\z@ \parsep\parskip \itemsep\z@ \fi}
+\g@addto@macro\@listii{\jnsao@listextra}
+\g@addto@macro\@listiii{\jnsao@listextra}
+\g@addto@macro\@listiv{\jnsao@listextra}
+\g@addto@macro\@listv{\jnsao@listextra}
+\g@addto@macro\@listvi{\jnsao@listextra}
+\renewcommand*{\labelitemii}{\labelitemfont\textendash}
+\renewcommand*{\labelenumii}{\theenumii)}
+\renewcommand*{\descriptionlabel}[1]{\hspace\labelsep\normalfont\sffamily\bfseries #1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fonts for structural elements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*{\jnsao@sectfont}{\color{structure}\sffamily}
+\newcommand*{\jnsao@titlefont}{\normalfont\jnsao@sectfont\scshape\huge}
+\newcommand*{\jnsao@authorfont}{\normalfont\sffamily\large}
+\newcommand*{\jnsao@headfootfont}{\normalfont\sffamily\footnotesize}
+\newcommand*{\jnsao@labelfont}{\color{structure}\sffamily}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sectioning: colored sans small caps
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*{\jnsao@section@font}{%
+    \normalfont\raggedright\jnsao@sectfont\Large\scshape}
+\newcommand*{\jnsao@subsection@font}{%
+    \normalfont\raggedright\jnsao@sectfont\large\scshape}
+\newcommand*{\jnsao@subsubsection@font}{%
+    \normalfont\raggedright\jnsao@sectfont\normalsize\scshape\itshape}
+\newcommand*{\jnsao@paragraph@font}{%
+    \normalfont\jnsao@sectfont\normalsize}
+
+% Vertical spacing of headings (as in the standard classes)
+\newcommand*{\jnsao@section@before}{3.5ex \@plus 1ex \@minus .2ex}
+\newcommand*{\jnsao@section@after}{2.3ex \@plus .2ex}
+\newcommand*{\jnsao@subsection@before}{3.25ex \@plus 1ex \@minus .2ex}
+\newcommand*{\jnsao@subsection@after}{1.5ex \@plus .2ex}
+
+% Headings are typeset in small caps, which requires lowercasing the title.
+% Do not lowercase arguments of reference commands (see below for \zcref).
+\AddToNoCaseChangeList{\ref \eqref \pageref \href \url \thanks}
+
+% Appendices are numbered by (lowercase) letters, sections are prefixed by
+% "appendix" (lowercase for small caps like the rest of the heading)
+\newcommand*{\jnsao@section@prefix}{}
+\AddToHook{cmd/appendix/after}{%
+    \gdef\thesection{\textsc{\@alph\c@section}}%
+    \gdef\jnsao@section@prefix{appendix}%
 }
 
-% section headers in small caps (requires lowercasing)
-% do not lowercase arguments of reference commands (see below for zcref)
-\AddToNoCaseChangeList{\ref \eqref \pageref \href \url \thanks}
-\renewcommand*{\sectionlinesformat}[4]{\@hangfrom{\hskip #2#3}{\MakeLowercase{#4}}}
+% With tagging, the (tagging-aware) heading templates of the LaTeX kernel are
+% active; configure the existing instances. Otherwise, define the standard
+% headings with the same parameters via \@startsection, and lowercase only the
+% title in the heading itself (not in the table of contents, bookmarks, or
+% marks).
+\ifjnsao@tagging
+    \EditInstance{heading}{section}{%
+        before-vspace = \jnsao@section@before,
+        after-vspace  = \jnsao@section@after,
+        heading-decls = \jnsao@section@font,
+        title-format  = \MakeLowercase{#1}\par,
+    }
+    \EditInstance{heading}{subsection}{%
+        before-vspace = \jnsao@subsection@before,
+        after-vspace  = \jnsao@subsection@after,
+        heading-decls = \jnsao@subsection@font,
+        title-format  = \MakeLowercase{#1}\par,
+    }
+    \EditInstance{heading}{subsubsection}{%
+        before-vspace = \jnsao@subsection@before,
+        after-vspace  = \jnsao@subsection@after,
+        heading-decls = \jnsao@subsubsection@font,
+        title-format  = \MakeLowercase{#1}\par,
+    }
+    \EditInstance{heading}{paragraph}{%
+        before-vspace = \jnsao@subsection@before,
+        heading-decls = \jnsao@paragraph@font,
+    }
+    \EditInstance{heading}{subparagraph}{%
+        before-vspace = \jnsao@subsection@before,
+        heading-decls = \jnsao@paragraph@font,
+    }
+    \EditInstance{headformat}{section}{separator-b = \enskip}
+    \EditInstance{headformat}{subsection}{separator-b = \enskip}
+    \EditInstance{headformat}{subsubsection}{separator-b = \enskip}
+    \AddToHook{cmd/appendix/after}{%
+        \EditInstance{heading}{section}{text = \jnsao@section@prefix}%
+    }
+\else
+    \NewDocumentCommand{\jnsao@lowercase@heading}{m s o m}{%
+        \IfBooleanTF{#2}%
+            {#1*{\MakeLowercase{#4}}}%
+            {#1[{\IfNoValueTF{#3}{#4}{#3}}]{\MakeLowercase{#4}}}%
+    }
+    \pdfstringdefDisableCommands{\let\MakeLowercase\@firstofone}
+    \newcommand{\jnsao@section}{\@startsection{section}{1}{\z@}%
+        {-\glueexpr\jnsao@section@before\relax}{\jnsao@section@after}%
+        {\jnsao@section@font}}
+    \newcommand{\jnsao@subsection}{\@startsection{subsection}{2}{\z@}%
+        {-\glueexpr\jnsao@subsection@before\relax}{\jnsao@subsection@after}%
+        {\jnsao@subsection@font}}
+    \newcommand{\jnsao@subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+        {-\glueexpr\jnsao@subsection@before\relax}{\jnsao@subsection@after}%
+        {\jnsao@subsubsection@font}}
+    \renewcommand{\section}{\jnsao@lowercase@heading\jnsao@section}
+    \renewcommand{\subsection}{\jnsao@lowercase@heading\jnsao@subsection}
+    \renewcommand{\subsubsection}{\jnsao@lowercase@heading\jnsao@subsubsection}
+    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
+        {\jnsao@subsection@before}{-1em}{\jnsao@paragraph@font}}
+    \renewcommand{\subparagraph}{\@startsection{subparagraph}{5}{\parindent}%
+        {\jnsao@subsection@before}{-1em}{\jnsao@paragraph@font}}
+    \renewcommand*{\@seccntformat}[1]{%
+        \ifcsname jnsao@#1@prefix\endcsname
+            \ifx\jnsao@section@prefix\@empty\else
+                \jnsao@section@prefix\nobreakspace
+            \fi
+        \fi
+        \csname the#1\endcsname\enskip
+    }
+\fi
 
-% Format (sub) figure labels
-\RequirePackage[labelfont={color=structure,sf}]{caption}
-\RequirePackage[labelfont={color=structure,sf}]{subcaption}
+% Captions: colored sans labels (the caption text itself is left alone)
+\renewcommand*{\fnum@figure}{{\jnsao@labelfont\figurename\nobreakspace\thefigure}}
+\renewcommand*{\fnum@table}{{\jnsao@labelfont\tablename\nobreakspace\thetable}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Format of theorem-like environments.
@@ -235,7 +357,7 @@
 ]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Footnotes: separation, special format for \thanks
+% Footnotes: separation, layout, special format for \thanks
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Store length in base font size
@@ -248,6 +370,17 @@
 \setlength{\jnsao@standardfootins}{\jnsao@footnotesep+\baselineskip}
 \setlength{\footnotesep}{\baselineskip}
 
+% Footnote marks in the current font
+\def\@makefnmark{\hbox{\@textsuperscript{\@thefnmark}}}
+
+% Footnote text indented by 1.5em, with the mark hanging into the first line
+% (\jnsao@footnotehook is used to switch off line numbers in footnotes)
+\let\jnsao@footnotehook\relax
+\long\def\@makefntext#1{%
+    \jnsao@footnotehook
+    \leftskip 1.5em\parindent 1em\noindent\hskip -.5em%
+    \hb@xt@\z@{\hss\@makefnmark}#1}
+
 % Footnote rule for other pages than the first page
 \def\jnsao@footnoterule{\relax%
     \vskip-\jnsao@footnotesep%
@@ -257,72 +390,70 @@
 
 % Footnote rule for the first page
 \def\jnsao@footnoterule@firstpage{\relax%
-    \jnsao@headfootrule%
-    %\vskip 2pt
+    \hrule\@width\textwidth\@height 0.4pt%
     }
 
-% Change font for \thanks
-\protected\def\thanks#1{\footnotemark
+% Change font for \thanks; the mark does not take up space (as usual)
+\protected\def\jnsao@thanks#1{\rlap{\footnotemark}%
     \protected@xdef\@thanks{\@thanks
         \protect\footnotetext[\the\c@footnote]{\sffamily #1}}%
 }
+\let\thanks\jnsao@thanks
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Vertical alignment: different first and other page layout
+% Page layout: different first and other page header/footer
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Flush to bottom
 \flushbottom
 
-% Various lengths
-\newlength{\jnsao@fullheight}
-\newlength{\jnsao@headsep}
-\newlength{\jnsao@firstpagehead}
-\newlength{\jnsao@firstpageheadplus}
+% Header and footer: lines of 11pt (fancyhdr adds struts), separated by a rule
+% (see the page styles below)
+% First page: two-line header, no footer
+\newlength{\jnsao@firstheadheight}
+\newlength{\jnsao@firstheadsep}
+\setlength{\jnsao@firstheadheight}{25.4pt}
+\setlength{\jnsao@firstheadsep}{14pt}
+% Other pages: one-line header and footer
 \newlength{\jnsao@headheight}
-\newlength{\jnsao@headlineheight}
+\newlength{\jnsao@headsep}
+\newlength{\jnsao@footskip}
+\setlength{\jnsao@headheight}{11.8pt}
+\setlength{\jnsao@headsep}{16.6pt}
+\setlength{\jnsao@footskip}{27pt}
 
-% Maximum available space for text, header, and footer
-\setlength{\jnsao@fullheight}{\textheight+\footskip+\headheight+\headsep}
-% Space between header and text
-\setlength{\jnsao@headsep}{\baselineskip}
-% Height of text lines in header/footer font
-\setlength{\jnsao@headlineheight}{11pt}
-% First page header height
-\setlength{\jnsao@firstpagehead}{2\jnsao@headlineheight}
-% ... plus extra for rule and separation
-\setlength{\jnsao@firstpageheadplus}{\jnsao@firstpagehead+2.4pt}
-% Other pages header (and footer) height plus extra for rule and separation
-\setlength{\jnsao@headheight}{\jnsao@headlineheight+2.4pt}
-
-% Recalculate header, footer, and text area heights from:
-% #1: header material height
-% #2: header separator white space
-% #3: footer material height
-% #4: footer separator white space
-\def\jnsao@setheadfoot#1#2#3#4{%
-    \global\headheight=#1%
-    \global\headsep=#2%
-    \global\footskip=#3%
-    \global\advance\footskip by #4%
-    \global\footheight=#3% KOMA-script seems to blow up things without this
-    \global\textheight=\jnsao@fullheight%
-    \global\advance\textheight by -\footskip%
-    \global\advance\textheight by -\headheight%
-    \global\advance\textheight by -\headsep%
+% A4 paper with a centered text block of width 157.5mm; header, text, and
+% footer together start 31.6pt below the top edge and end 90.4pt above the
+% bottom edge. Set up the first page; the other pages are set up below.
+\RequirePackage{geometry}
+\geometry{
+    a4paper,
+    hcentering,
+    textwidth=157.5mm,
+    includeheadfoot,
+    top=31.6pt,
+    bottom=90.4pt,
+    headheight=\jnsao@firstheadheight,
+    headsep=\jnsao@firstheadsep,
+    footskip=0pt,
 }
+% Available space for header, text, and footer
+\newlength{\jnsao@fullheight}
+\setlength{\jnsao@fullheight}{\textheight+\footskip+\headheight+\headsep}
 
 % First page settings
 \setlength{\skip\footins}{\jnsao@footnotesep+0.5\splittopskip}
 \let\footnoterule\jnsao@footnoterule@firstpage
-\jnsao@setheadfoot{\jnsao@firstpageheadplus}{\jnsao@headsep}{0em}{0em}
 
 % Other pages' settings
 \def\jnsao@geometry@otherpages{%
     % Set up geometry of following pages
     \global\skip\footins=\jnsao@standardfootins
     \global\let\footnoterule\jnsao@footnoterule
-    \jnsao@setheadfoot{\jnsao@headheight}{\jnsao@headsep}{\jnsao@headheight}{\jnsao@headsep}
+    \global\headheight=\jnsao@headheight
+    \global\headsep=\jnsao@headsep
+    \global\footskip=\jnsao@footskip
+    \global\textheight=\dimexpr\jnsao@fullheight-\headheight-\headsep-\footskip\relax
 }
 
 % Switch to the regular geometry once the first page has been built, using the
@@ -339,7 +470,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage[style=iso]{datetime2}
-\def\jnsao@insertdate{\@date}
+% keep the date for the header, since \maketitle clears \@date
+\def\jnsao@insertdate{\jnsao@date}
+\let\jnsao@date\@empty
+\AtBeginDocument{\global\let\jnsao@date\@date}
+\AddToHook{cmd/maketitle/before}{\global\let\jnsao@date\@date}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Publication information
@@ -413,80 +548,128 @@
 % Headers and footers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\RequirePackage[fit]{truncate}
+% Truncate the text stored in a macro (#2) at a word boundary (followed by
+% \,\dots) to fit a given width (#1)
+\ExplSyntaxOn
+\box_new:N \l__jnsao_trunc_box
+\seq_new:N \l__jnsao_trunc_seq
+\tl_new:N \l__jnsao_trunc_tl
+\tl_new:N \l__jnsao_trunc_try_tl
+\dim_new:N \l__jnsao_trunc_dim
+\cs_new_protected:Npn \jnsao@truncate #1#2
+  {
+    \dim_set:Nn \l__jnsao_trunc_dim {#1}
+    \hbox_set:Nn \l__jnsao_trunc_box {#2}
+    \dim_compare:nNnTF { \box_wd:N \l__jnsao_trunc_box } > \l__jnsao_trunc_dim
+      {
+        \seq_set_split:NnV \l__jnsao_trunc_seq { ~ } #2
+        \tl_clear:N \l__jnsao_trunc_tl
+        \seq_map_inline:Nn \l__jnsao_trunc_seq
+          {
+            \tl_set_eq:NN \l__jnsao_trunc_try_tl \l__jnsao_trunc_tl
+            \tl_if_empty:NF \l__jnsao_trunc_try_tl
+              { \tl_put_right:Nn \l__jnsao_trunc_try_tl { ~ } }
+            \tl_put_right:Nn \l__jnsao_trunc_try_tl {##1}
+            \hbox_set:Nn \l__jnsao_trunc_box
+              { \l__jnsao_trunc_try_tl \jnsao@truncmarker }
+            \dim_compare:nNnTF
+              { \box_wd:N \l__jnsao_trunc_box } > \l__jnsao_trunc_dim
+              { \seq_map_break: }
+              { \tl_set_eq:NN \l__jnsao_trunc_tl \l__jnsao_trunc_try_tl }
+          }
+        \l__jnsao_trunc_tl \jnsao@truncmarker
+      }
+      { \box_use_drop:N \l__jnsao_trunc_box }
+  }
+\ExplSyntaxOff
+\newcommand*{\jnsao@truncmarker}{\,\dots}
 
-\addtokomafont{pageheadfoot}{\normalfont\sffamily\footnotesize}
+% The title is cleared by \maketitle, so keep a copy for the footer
+\let\jnsao@title\@empty
+\AtBeginDocument{\global\let\jnsao@title\@title}
+\AddToHook{cmd/maketitle/before}{\global\let\jnsao@title\@title}
 
-\def\jnsao@headfootrule{\hrule width \textwidth height 0.4pt}
-\def\jnsao@ruledhead#1{\vbox to \headheight{\usekomafont{pageheadfoot}\hbox to \textwidth{#1}\vskip 2pt\jnsao@headfootrule\vfill}}
-\def\jnsao@ruledfoot#1{\vbox to \footheight{\usekomafont{pageheadfoot}\vfill\jnsao@headfootrule\vskip 2pt\hbox to \textwidth{#1}}}
-
-\def\ps@jnsao{%
-    \def\@oddhead{\jnsao@ruledhead{%
-        \ifx\jnsao@accepted\empty{%
-            \ifx\jnsao@eprint\empty{%
-            \jnsao@status, \jnsao@insertdate%
-        }\else{%
-            \jnsao@printeprint, \jnsao@insertdate%
-        }\fi%
-        }\else{%
-            \jnsao@journalabbrev%
-            \ifx\jnsao@volume\empty{\relax}\else{ \jnsao@volume}\fi%
-            \ifx\jnsao@year\empty{\relax}\else{ (\jnsao@year)}\fi%
-            \ifx\jnsao@number\empty{\relax}\else{, \jnsao@number}\fi%
-        }\fi%
-        \hfill%
-        page~\thepage~of~\PreviousTotalPages%
-    }}
-    \def\@oddfoot{\jnsao@ruledfoot{%
-        \let\thanks\@gobble% \@title may contain \thanks
-        \truncate{0.5\textwidth}{\ifx\jnsao@shortauthor\empty{}\else{\jnsao@shortauthor}\fi}%
-        \hfill%
-        \truncate{0.5\textwidth}{\ifx\jnsao@shorttitle\empty{\@title}\else{\jnsao@shorttitle}\fi}%
-    }}
+% Journal information or manuscript status (single line)
+\def\jnsao@headinfo{%
+    \ifx\jnsao@accepted\empty
+        \ifx\jnsao@eprint\empty
+            \jnsao@status
+        \else
+            \jnsao@printeprint
+        \fi
+    \else
+        \jnsao@journalabbrev
+        \ifx\jnsao@volume\empty\else\ \jnsao@volume\fi
+        \ifx\jnsao@year\empty\else\ (\jnsao@year)\fi
+        \ifx\jnsao@number\empty\else, \jnsao@number\fi
+    \fi
 }
 
-\pagestyle{jnsao}
+\RequirePackage{fancyhdr}
+\fancyhfinit{\jnsao@headfootfont}
+\renewcommand*{\headrulewidth}{0.4pt}
+\renewcommand*{\footrulewidth}{0.4pt}
+\renewcommand*{\headruleskip}{0.8pt}
+\renewcommand*{\footruleskip}{0.7pt}
 
-\def\ps@jnsaotitlepage{%
-    \def\@oddhead{\jnsao@ruledhead{%
-        \parbox[b][\jnsao@firstpagehead][t]{0.75\textwidth}{%
-            \ifx\jnsao@accepted\empty{%
-            \ifx\jnsao@eprint\empty{%
-                \jnsao@status\\
-                date: \jnsao@insertdate \\
-            }\else{%
-                \jnsao@printeprint\\
-                date: \jnsao@insertdate \\
-            }\fi%
-            }\else{%
-                \jnsao@journalabbrev%
-                \ifx\jnsao@volume\empty{\relax}\else{ \jnsao@volume}\fi%
-                \ifx\jnsao@year\empty{\relax}\else{ (\jnsao@year)}\fi%
-                \ifx\jnsao@number\empty{\relax}\else{, \jnsao@number}\fi%
-                \ifx\jnsao@doi\empty{\relax}\else{, \expandafter\doi\expandafter{\jnsao@doi}}\fi%
+% Regular pages: journal information and page number in the header, (short)
+% author and title in the footer, each separated by a rule
+\fancypagestyle{jnsao}{%
+    \fancyhf{}%
+    \fancyhead[L]{%
+        \jnsao@headinfo
+        \ifx\jnsao@accepted\empty, \jnsao@insertdate\fi
+    }%
+    \fancyhead[R]{page~\thepage~of~\PreviousTotalPages}%
+    \fancyfoot[L]{%
+        \jnsao@truncate{0.5\textwidth}\jnsao@shortauthor
+    }%
+    \fancyfoot[R]{%
+        \let\thanks\@gobble % \@title may contain \thanks
+        \def\\{ }%
+        \ifx\jnsao@shorttitle\empty
+            \jnsao@truncate{0.5\textwidth}\jnsao@title
+        \else
+            \jnsao@truncate{0.5\textwidth}\jnsao@shorttitle
+        \fi
+    }%
+}
+
+% Title page (used by \maketitle): two-line header with full journal
+% information, copyright, and license; no footer
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \renewcommand*{\headruleskip}{3.4pt}%
+    \renewcommand*{\footrulewidth}{0pt}%
+    \renewcommand*{\footruleskip}{0pt}%
+    \fancyhead[L]{%
+        \parbox[b]{0.75\textwidth}{%
+            \jnsao@headinfo
+            \ifx\jnsao@accepted\empty
+                \\date: \jnsao@insertdate
+            \else
+                \ifx\jnsao@doi\empty\else
+                    , \expandafter\doi\expandafter{\jnsao@doi}%
+                \fi
                 \\%
                 \ifx\jnsao@submitted\empty
                     Accepted: \jnsao@accepted
                 \else
                     Submitted: \jnsao@submitted, accepted: \jnsao@accepted
                 \fi
-                \\
-            }\fi%
-        }%
-        \hfill%
-        \parbox[b][\jnsao@firstpagehead][t]{0.25\textwidth}{%
-            \hfill page~\thepage~of~\PreviousTotalPages\\%
-            \null\hfill\jnsao@copyright
-            \ifx\jnsao@license\empty{\relax}
-            \else{, \jnsao@linklicense{\jnsao@license}}
             \fi
         }%
-    }}
-    \def\@oddfoot{}
+    }%
+    \fancyhead[R]{%
+        page~\thepage~of~\PreviousTotalPages\\
+        \jnsao@copyright
+        \ifx\jnsao@license\empty\else
+            , \jnsao@linklicense{\jnsao@license}%
+        \fi
+    }%
 }
 
-\renewcommand{\titlepagestyle}{jnsaotitlepage}
+\pagestyle{jnsao}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Title matter: title block, acknowledgments, abstract
@@ -496,36 +679,57 @@
 \def\jnsao@insert@ack{{%
     \let\@thefnmark\@empty
     \let\@finalstrut\@gobble
-    \long\def\@makefntext##1{\noindent##1}%
+    \long\def\@makefntext##1{\jnsao@footnotehook\noindent##1}%
     \@footnotetext{\parbox[t]{\columnwidth}{\jnsao@ack}}}}
 
+% The footnote set-up in effect at the start of the document (possibly
+% adapted for tagging), which \maketitle may change for the title
+\AddToHook{begindocument/end}{%
+    \let\jnsao@makefntext\@makefntext
+    \let\jnsao@makefnmark\@makefnmark
+}
+
+% Tagging support for the title block
+\ifjnsao@tagging
+    \def\jnsao@titleblock{%
+        \begin{center}[tagging-suppress-paras=true,
+            tagging-recipe=standalone,
+            tag-name=\UseStructureName{title/block},
+            tag-attr-class=aria-banner]}%
+    \def\jnsao@authorrole{\AssignStructureRole{para/textblock}{title-author}}%
+    \def\jnsao@titlesocket{\UseTaggingSocket{title}{}}%
+\else
+    \def\jnsao@titleblock{\begin{center}}%
+    \let\jnsao@authorrole\relax
+    \let\jnsao@titlesocket\@firstofone
+\fi
+
 \renewcommand*{\@maketitle}{%
+  % use the same footnote set-up as in the text for \thanks
+  \let\thanks\jnsao@thanks
+  \let\@makefntext\jnsao@makefntext
+  \let\@makefnmark\jnsao@makefnmark
   \global\@topnum=\z@
-  \setparsizes{\z@}{\z@}{\z@\@plus 1fil}\par@updaterelative
+  \setlength{\parindent}{\z@}%
+  \setlength{\parskip}{\z@}%
+  \setlength{\parfillskip}{\z@\@plus 1fil}%
   \null
   \vskip 2em%
   \ifx\jnsao@ack\empty
   \else
   \jnsao@insert@ack
   \fi
-  \begin{center}%
-    {\usekomafont{title}{\huge \MakeLowercase{\@title} \par}}%
-    \vskip .5em
-    {\ifx\@subtitle\@empty\else\usekomafont{subtitle}\@subtitle\par\fi}%
-    \vskip 1em
+  \jnsao@titleblock
+    {\jnsao@titlefont\jnsao@titlesocket{\MakeLowercase{\@title}}\par}%
+    \vskip 1.5em
     {%
-      \usekomafont{author}{%
-        \lineskip .5em%
-        \begin{tabular}[t]{c}
-          \@author
-        \end{tabular}\par
-      }%
+      \jnsao@authorfont\jnsao@authorrole
+      \lineskip .5em%
+      \begin{tabular}[t]{c}
+        \@author
+      \end{tabular}\par
     }%
     \vskip \z@ \@plus 2em
-    \ifx\@dedication\@empty \else
-      \vskip 2em
-      {\usekomafont{dedication}{\@dedication \par}}%
-    \fi
   \end{center}%
   \par
   \vskip 2em
@@ -550,7 +754,7 @@
     \seq_if_empty:NF #2
       {
         \par \medskip \noindent
-        { \normalfont \sectfont \nobreak #1 \quad }
+        { \normalfont \jnsao@sectfont \nobreak #1 \quad }
         \seq_set_map:NNn \l_tmpa_seq #2 { #3 {##1} }
         \seq_use:Nn \l_tmpa_seq { \nobreakspace $\cdot$ \c_space_tl }
       }
@@ -568,7 +772,7 @@
     \small%
     \quotation%
     \noindent%
-    {\normalfont\sectfont\nobreak\abstractname\quad}%
+    {\normalfont\jnsao@sectfont\nobreak\abstractname\quad}%
     }{%
     \jnsao@printkeywords
     \endquotation%
