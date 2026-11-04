@@ -233,12 +233,8 @@
 % Change font for \thanks
 \protected\def\thanks#1{\footnotemark
     \protected@xdef\@thanks{\@thanks
-        \protect\jnsao@thankstext[\the\c@footnote]{\sffamily #1}}%
+        \protect\footnotetext[\the\c@footnote]{\sffamily #1}}%
 }
-\def\jnsao@thankstext{%
-     \@ifnextchar [\@xfootnotenext
-       {\protected@xdef\@thefnmark{\thempfn}%
-    \@footnotetext}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Vertical alignment: different first and other page layout
@@ -474,15 +470,12 @@
 % This version \@maketitle is simply based on scrartcl.cls with unsupported
 % features removed.
 
-\def\jnsao@insert@ack{\insert\footins{%
-    \reset@font\footnotesize%
-    \interlinepenalty\interfootnotelinepenalty%
-    \splittopskip\footnotesep%
-    \splitmaxdepth \dp\strutbox \floatingpenalty \@MM%
-    \hsize\columnwidth \@parboxrestore%
-    \color@begingroup%
-    \hb@xt@\columnwidth{\rule\z@\footnotesep\ignorespaces\parbox[t]{\textwidth}{\jnsao@ack}\hss}%
-    \color@endgroup}}
+% Typeset acknowledgements as an unmarked footnote
+\def\jnsao@insert@ack{{%
+    \let\@thefnmark\@empty
+    \let\@finalstrut\@gobble
+    \long\def\@makefntext##1{\noindent##1}%
+    \@footnotetext{\parbox[t]{\columnwidth}{\jnsao@ack}}}}
 
 \renewcommand*{\@maketitle}{%
   \global\@topnum=\z@
