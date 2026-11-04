@@ -19,7 +19,7 @@ fontspec
 libertine
 libertinus-fonts
 libertinus-otf
-lualineno
-txfonts
+lua-unicode-math
+stix2-otf
 luakeyval
 lualineno
