@@ -163,8 +163,8 @@ The remaining commands in the preamble starting with \cs{manuscript} set the pub
 
 The class loads the following packages, which therefore should not be loaded again (with different options) or replaced by alternatives:
 \begin{itemize}
-    \item \pkg{amsmath} (with options \pkg{leqno} and \pkg{tbtags}, i.e., equation numbers on the left), \pkg{amsthm}, and \pkg{mathtools} (with option \pkg{centercolon});
-    \item \pkg{libertinus}, \pkg{newtxmath}, and \pkg{noto-mono} for fonts (with \pkg{fontspec} for Lua\LaTeX), as well as \pkg{fontenc} and \pkg{microtype}; do not load other font packages;
+    \item \pkg{amsmath} (with options \pkg{leqno} and \pkg{tbtags}, i.e., equation numbers on the left), \pkg{amsthm}, and \pkg{mathtools} (with option \pkg{centercolon} for pdf\LaTeX);
+    \item \pkg{libertinus} and \pkg{noto-mono} for text fonts, with \pkg{newtxmath} for math (pdf\LaTeX) or \pkg{lua-unicode-math} and Libertinus Math (Lua\LaTeX), as well as \pkg{fontenc} (pdf\LaTeX) or \pkg{fontspec} (Lua\LaTeX) and \pkg{microtype}; do not load other font packages;
     \item \pkg{geometry} and \pkg{fancyhdr} for the page layout and the headers and footers;
     \item \pkg{xcolor} (with option \pkg{svgnames}) and \pkg{hyperref};
     \item \pkg{zref-clever} for references, which replaces \pkg{cleveref} (see \zcref{sec:references});

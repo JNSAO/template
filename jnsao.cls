@@ -73,13 +73,6 @@
 % Load and set up fonts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% pdfLaTeX: Type 1 Libertinus text fonts with newtxmath, which takes letters
-% from Libertine and symbols from txfonts.
-% LuaLaTeX: OpenType Libertinus text fonts with lua-unicode-math, mimicking
-% this with a combination of STIX Two Math (symbols, math parameters) and
-% Libertinus Math (letters, Greek, digits, and their math alphabets) into a
-% single font.
-% Text uses old-style figures, math lining ones.
 \ifluatex
   \RequirePackage{lua-unicode-math} % before fontspec
   \RequirePackage[proportional,osf,nomath]{libertinus}
@@ -101,142 +94,9 @@
   \setmathtt{NotoSansMono}[
     Renderer = Basic, Extension = .ttf, Scale = 0.80,
     UprightFont = *-Regular, BoldFont = *-Bold]
-  % code points taken from Libertinus Math (punctuation, digits, letters, and
-  % their math alphabets)
-  \def\jnsao@math@libertinus{0x21*0x2C*0x2E*0x30-0x3B*0x41-0x5A*0x61-0x7A*%
-    0x391-0x3A9*0x3B1-0x3C9*0x3D1*0x3D5*0x3D6*0x3F0*0x3F1*0x3F5*0x210E*%
-    0x1D400-0x1D49B*0x1D6A4-0x1D6A5*0x1D6A8-0x1D7C9*0x1D7CE-0x1D7D7}
-  % symbols scaled to the size of the newtxmath ones: slanted integrals with
-  % uniform stroke width from Libertinus Math (larger in text style; display
-  % integrals are taken from the unscaled font), and relations and binary
-  % operators from STIX Two Math (smaller)
-  \def\jnsao@math@integrals{0x222B-0x2233*0x2A0B-0x2A1C}
-  \def\jnsao@math@relations{0x2B*0x3C-0x3E*0xB1*0xD7*0xF7*0x2208-0x2209*%
-    0x220B-0x220C*0x2212-0x2213*0x221D*0x223C*0x2243*0x2245*0x2248*%
-    0x2254-0x2255*0x2260-0x2261*0x2264-0x2265*0x226A-0x226B*0x227A-0x227B*%
-    0x2282-0x228B*0x22C5*0x2A7D-0x2A7E*0x2AAF-0x2AB0}
-  % bold version: map letters, Greek, and digits to their bold counterparts
-  % in Libertinus Math (which has no bold font); adjust combined fonts (below)
-  \directlua{
-    local d = {}
-    local function map(from, to, n)
-      for i = 0, n - 1 do d[from + i] = to + i end
-    end
-    map(0x30, 0x1D7CE, 10)    % digits
-    map(0x41, 0x1D400, 26)    % upright Latin
-    map(0x61, 0x1D41A, 26)    % upright Latin
-    map(0x391, 0x1D6A8, 25)   % upright Greek
-    map(0x3B1, 0x1D6C2, 25)   % upright Greek
-    map(0x1D434, 0x1D468, 52) % italic Latin
-    map(0x1D6E2, 0x1D71C, 58) % italic Greek
-    d[0x210E] = 0x1D489       % italic h
-    fonts.handlers.otf.addfeature {
-      name = "jnsaobold", type = "substitution", data = d }
-    % adjust the combined fonts: glyphs taken from a scaled font are shifted
-    % vertically to keep them centered on the math axis (and take their larger
-    % variants from an unscaled font, if given), and inline fractions get the
-    % spacing of newtxmath
-    jnsao_scaled = {}
-    luatexbase.add_to_callback("luaotfload.patch_font", function(fnt)
-      local subfonts = fnt.fonts
-      if not subfonts or not fnt.MathConstants then return end
-      local ids = fonts.hashes.identifiers
-      local shift, variants = {}, {}
-      for i, f in ipairs(subfonts) do
-        local scaled = f.id and jnsao_scaled[f.id]
-        if scaled then
-          shift[i] = fnt.MathConstants.AxisHeight
-            - ids[f.id].MathConstants.AxisHeight
-          if type(scaled) == "number" then variants[i] = scaled end
-        end
-      end
-      if not next(shift) then return end
-      for i, id in pairs(variants) do
-        table.insert(subfonts, { id = id })
-        variants[i] = { index = rawlen(subfonts), chars = ids[id].characters }
-      end
-      % inline fraction spacing (in em/1000)
-      local mc, em = fnt.MathConstants, fnt.size / 1000
-      mc.FractionNumeratorShiftUp = math.floor(394 * em)
-      mc.FractionDenominatorShiftDown = math.floor(345 * em)
-      mc.FractionNumeratorGapMin = math.floor(56 * em)
-      mc.FractionDenominatorGapMin = math.floor(56 * em)
-      % import a glyph (with its variants) from an unscaled font into a free
-      % private slot
-      local chars, free = fnt.characters, 0x10F000
-      local function import(v, code)
-        while chars[free] do free = free + 1 end
-        local slot, chr = free, table.copy(v.chars[code])
-        chars[slot] = chr
-        chr.commands = { { "slot", v.index, code } }
-        if chr.next then chr.next = import(v, chr.next) end
-        for _, part in ipairs(chr.vert_variants or {}) do
-          part.glyph = import(v, part.glyph)
-        end
-        return slot
-      end
-      local todo = {}
-      for u, chr in pairs(chars) do
-        local cmd = chr.commands and chr.commands[1]
-        if cmd and cmd[1] == "slot" and shift[cmd[2]] then
-          todo[u] = cmd[2]
-        end
-      end
-      for u, i in pairs(todo) do
-        local chr, s, v = table.copy(chars[u]), shift[i], variants[i]
-        chr.commands = { { "down", -s }, chr.commands[1] }
-        chr.height = (chr.height or 0) + s
-        chr.depth = (chr.depth or 0) - s
-        if v then
-          local orig = v.chars[u]
-          chr.next = orig and orig.next and import(v, orig.next)
-          chr.vert_variants = nil
-        end
-        chars[u] = chr
-      end
-    end, "jnsao.patch_math")
-  }
-  % size function: load the fonts at the requested size with the given
-  % features, and combine them; the optional argument selects the bold
-  % version (STIX Two Math emboldened, Libertinus Math with bold glyphs)
-  \DeclareSizeFunction{jnsaomath}{%
-    \edef\@tempa{\f@size}%
-    \ifx\optional@arg\@empty
-      \def\@tempb{}\def\@tempc{}%
-    \else
-      \def\@tempb{embolden=2;}\def\@tempc{jnsaobold;}%
-    \fi
-    \font\jnsao@math@a="[STIXTwoMath-Regular.otf]:mode=base;script=math;%
-      \mandatory@arg\@tempb" at \@tempa pt%
-    \font\jnsao@math@b="[LibertinusMath-Regular.otf]:mode=base;script=math;%
-      \mandatory@arg\@tempc" at \@tempa pt%
-    \font\jnsao@math@c="[LibertinusMath-Regular.otf]:mode=base;script=math;%
-      ss08;\mandatory@arg\@tempb" at 1.13\dimexpr\@tempa pt\relax
-    \font\jnsao@math@e="[LibertinusMath-Regular.otf]:mode=base;script=math;%
-      ss08;\mandatory@arg\@tempb" at \@tempa pt%
-    \font\jnsao@math@d="[STIXTwoMath-Regular.otf]:mode=base;script=math;%
-      \mandatory@arg\@tempb" at 0.88\dimexpr\@tempa pt\relax
-    \directlua{
-      jnsao_scaled[\fontid\jnsao@math@c] = \fontid\jnsao@math@e
-      jnsao_scaled[\fontid\jnsao@math@d] = true
-    }%
-    \edef\external@font{"combo: 1->\fontid\jnsao@math@a;
-      2->\fontid\jnsao@math@b,\jnsao@math@libertinus;
-      3->\fontid\jnsao@math@c,\jnsao@math@integrals;
-      4->\fontid\jnsao@math@d,\jnsao@math@relations"}%
-  }
-  % families for text, script, and scriptscript size
-  \def\jnsao@math@family#1#2{%
-    \DeclareFontFamily{TU}{#1}{}%
-    \DeclareFontShape{TU}{#1}{m}{n}{<->jnsaomath*language=dflt;#2}{}%
-    \DeclareFontShape{TU}{#1}{b}{n}{<->jnsaomath*[b]language=dflt;#2}{}%
-  }
-  \jnsao@math@family{jnsao-math}{}
-  \jnsao@math@family{jnsao-math-s}{ssty=1;}
-  \jnsao@math@family{jnsao-math-ss}{ssty=2;}
-  \DeclareMathScriptfontMapping{TU}{jnsao-math}{TU}{jnsao-math-s}{TU}{jnsao-math-ss}
-  \DeclareSymbolFont{lummain}{TU}{jnsao-math}{m}{n}
-  \SetSymbolFont{lummain}{bold}{TU}{jnsao-math}{b}{n}
+  % math font: Libertinus Math with slanted integrals (stylistic set 8)
+  \setmathfont{LibertinusMath-Regular.otf}[StylisticSet = 8,
+    BoldFont = LibertinusMath-Regular.otf, BoldFeatures = {FakeBold = 3}]
   % use the (narrower) colon instead of the ratio sign for ':' and \colon
   \Umathcode`\:="3 \symlummain "3A\relax
   % use the precomposed symbols (as with centercolon); mathtools defines its
