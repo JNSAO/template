@@ -21,7 +21,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}[2025-06-01] % required by keytheorems
-\ProvidesClass{jnsao}[2026/10/24 v0.16 JNSAO article]
+\ProvidesClass{jnsao}[2026/11/04 v0.20 JNSAO article]
 
 \newif\if@review
 \@reviewfalse
@@ -40,6 +40,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define colors
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \RequirePackage[svgnames]{xcolor}
 \definecolor{hrefcolor}{rgb}{0.0,0.4,0.7}
 \definecolor{citecolor}{rgb}{0.0,0.35,0.2}
@@ -49,6 +50,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load amsmath, amsthm, mathtools, hyperref (in this order!)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \RequirePackage[leqno,tbtags]{amsmath}
 \RequirePackage{amsthm}
 \RequirePackage[centercolon]{mathtools}
@@ -69,6 +71,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and set up fonts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \RequirePackage[T1]{fontenc}
 \RequirePackage[proportional]{libertine}
 \RequirePackage[libertine,liby,vvarbb]{newtxmath}
@@ -80,6 +83,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Format: title, sectioning in colored sans smallcaps
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \renewcommand*{\sectfont}{\color{structure}\sffamily}
 \setkomafont{title}{\color{structure}\normalfont\sffamily\scshape}
 \setkomafont{author}{\large\normalfont\sffamily}
@@ -96,7 +100,7 @@
 }
 
 % section headers in small caps (requires lowercasing)
-% do not lowercase arguments of reference commands
+% do not lowercase arguments of reference commands (see below for zcref)
 \AddToNoCaseChangeList{\ref \eqref \pageref \href \url \thanks}
 \renewcommand*{\sectionlinesformat}[4]{\@hangfrom{\hskip #2#3}{\MakeLowercase{#4}}}
 
@@ -104,7 +108,7 @@
 \RequirePackage[labelfont={color=structure,sf}]{caption}
 \RequirePackage[labelfont={color=structure,sf}]{subcaption}
 
-% Url
+% URLs
 \renewcommand{\UrlFont}{\normalfont\sffamily}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,10 +299,9 @@
 }
 
 % Switch to the regular geometry once the first page has been built, using the
-% output routine hook (kernel 2025-06-01) at the end of \@outputpage, which is
-% kept by the new tagging code. Since the kernel has already initialized the
-% column height for the next page from the old \textheight at this point,
-% reset it to the new value.
+% output routine hook (kernel 2025-06-01) at the end of \@outputpage.
+% Since the kernel has already initialized the column height for the next page
+% from the old \textheight at this point, reset it to the new value.
 \AddToHookNext{build/page/after}{%
     \jnsao@geometry@otherpages
     \global\@colht\textheight
@@ -460,15 +463,8 @@
 \renewcommand{\titlepagestyle}{jnsaotitlepage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Abstract and article title
+% Title matter: title block, acknowledgments, abstract
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \maketitle customisations:
-% - Locally convert \@title to lower case for ``all small caps'' to work right
-%   date formats.
-% - Include acknowledgements before \thanks footnotes
-% This version \@maketitle is simply based on scrartcl.cls with unsupported
-% features removed.
 
 % Typeset acknowledgements as an unmarked footnote
 \def\jnsao@insert@ack{{%
