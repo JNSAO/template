@@ -10,7 +10,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[english,review]{jnsao}
-\usepackage[utf8]{inputenc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Manuscript information.
@@ -113,6 +112,26 @@ The class uses \verb!zref-clever! for handling references to environments and ot
 
 See \cref{thm,lem,cor}.
 
+\subsection{Mathematics}
+
+Math is set using \verb!newtxmath!, matching the Libertinus text font. For example, let $X$ be a Hilbert space, $F\colon X\to\mathbb{R}\cup\{\infty\}$ be proper, convex, and lower semicontinuous, and $\alpha>0$. Then the proximal point mapping $\operatorname{prox}_{\alpha F}\colon X\to X$, defined for $x\in X$ by
+\begin{equation}\label{eq:prox}
+    \operatorname{prox}_{\alpha F}(x) \coloneqq \operatorname*{arg\,min}_{z\in X}\ \frac{1}{2\alpha}\|z-x\|_X^2 + F(z),
+\end{equation}
+is well-defined and single-valued, and $\hat x = \operatorname{prox}_{\alpha F}(x)$ if and only if $x - \hat x \in \alpha\,\partial F(\hat x)$. For example, for $F(z) = \|z\|_{\ell^1}$ on $X=\mathbb{R}^n$, \cref{eq:prox} can be computed componentwise as
+\begin{equation}
+    \begin{split}
+        [\operatorname{prox}_{\alpha F}(x)]_i &= \operatorname{sign}(x_i)\max\{|x_i|-\alpha, 0\}\\
+        &= \begin{cases}
+            x_i - \alpha & \text{if } x_i > \alpha,\\
+            0 & \text{if } |x_i| \leq \alpha,\\
+            x_i + \alpha & \text{if } x_i < -\alpha,
+        \end{cases}
+        \qquad 1\leq i\leq n.
+    \end{split}
+\end{equation}
+Further symbols: $\mathcal{A}$, $\mathfrak{g}$, $\mathbf{v}$, $\boldsymbol{\alpha}$, $\mathsf{T}$, $\mathtt{x}$, $\sum_{k=1}^\infty 2^{-k} = 1$, $\frac{1}{2}\|x\|^2 \leq \frac{a+b}{c}$, $\int_0^1 f(t)\,dt$, $\langle x, y\rangle_X$, and $\lim_{n\to\infty} x_n \rightharpoonup \bar x$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Document information}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -154,9 +173,10 @@ It is strongly recommended to use \verb!BibTeX! together with the provided bibli
     year={2019},
     eprinttype={arxiv},
     eprint={1903.00000},
+    version={1},
 }\end{verbatim}
-        \end{quote}
-        see \cite{arxiv}, or 
+\end{quote}
+        see \cite{arxiv}, or
         \begin{quote}
             \begin{verbatim}@article{HAL,
     title={Another interesting result in nonsmooth analysis},
@@ -165,6 +185,7 @@ It is strongly recommended to use \verb!BibTeX! together with the provided bibli
     year={2019},
     eprinttype={hal},
     eprint={00000000},
+    version={1}
 }\end{verbatim}
         \end{quote}
         see \cite{HAL}.
@@ -182,7 +203,7 @@ If you use this class to submit to arXiv, it is \emph{necessary} to include the 
 
 \appendix
 
-\section{Appendix}\label{app}
+\section{Another section}\label{app}
 
 This is an appendix. It may have subsections.
 
