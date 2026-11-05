@@ -77,7 +77,12 @@
 \RequirePackage[libertine,liby,vvarbb]{newtxmath}
 \RequirePackage[scaled=0.95,varqu,varl]{inconsolata}
 \useosf
+\renewcommand{\UrlFont}{\normalfont\sffamily}
+% use the monospaced text font also for \mathtt (in the current encoding)
+\SetMathAlphabet{\mathtt}{normal}{\encodingdefault}{\ttdefault}{\mddefault}{\shapedefault}
+\SetMathAlphabet{\mathtt}{bold}{\encodingdefault}{\ttdefault}{\bfdefault}{\shapedefault}
 \frenchspacing
+\let\normalsfcodes\frenchspacing % also in the output routines
 \RequirePackage{microtype}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
