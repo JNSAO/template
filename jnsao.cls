@@ -540,7 +540,6 @@
   \RequirePackage[mathlines]{lineno}
   \linenumbers
   \renewcommand{\linenumberfont}{\normalfont\scriptsize\sffamily\color{gray}}
-  \renewcommand\thelinenumber{\tabularnumsf{\arabic{linenumber}}}
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
