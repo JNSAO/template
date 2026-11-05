@@ -331,7 +331,7 @@
 \let\jnsao@ack\empty
 \def\jnsao@journalabbrev{J.~Nonsmooth Anal.~Optim.}
 \def\jnsao@license{CC-BY-SA 4.0}
-\def\jnsao@copyright{{\copyright} the authors}
+\def\jnsao@copyright{\textcopyright{} the authors}
 \def\jnsao@status{Manuscript}
 
 \newcommand{\manuscriptsubmitted}[1]{\gdef\jnsao@submitted{#1}}
