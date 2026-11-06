@@ -2,13 +2,14 @@ scheme-basic latexmk
 koma-script
 caption
 datetime2
-inconsolata
 keytheorems
 libertine
 lineno
 mathtools
 microtype
+mweights
 newtx
+noto
 translations
 truncate
 upquote

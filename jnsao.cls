@@ -75,7 +75,7 @@
 \RequirePackage[T1]{fontenc}
 \RequirePackage[proportional]{libertine}
 \RequirePackage[libertine,liby,vvarbb]{newtxmath}
-\RequirePackage[scaled=0.95,varqu,varl]{inconsolata}
+\RequirePackage[scale=0.80]{noto-mono}
 \useosf
 \renewcommand{\UrlFont}{\normalfont\sffamily}
 % use the monospaced text font also for \mathtt (in the current encoding)
