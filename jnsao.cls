@@ -73,16 +73,44 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage[T1]{fontenc}
-\RequirePackage[proportional]{libertine}
-\RequirePackage[libertine,liby,vvarbb]{newtxmath}
-\RequirePackage[scale=0.80]{noto-mono}
-\useosf
-\renewcommand{\UrlFont}{\normalfont\sffamily}
+\RequirePackage{iftex}
+\ifluatex
+  % set up the Type 1 families for newtxmath as libertine would for pdfLaTeX
+  \renewcommand*{\rmdefault}{LinuxLibertineT-LF}
+  \renewcommand*{\sfdefault}{LinuxBiolinumT-LF}
+  % newtxmath uses the semibold weight (as for pdfLaTeX) only if libertine is
+  % already loaded, which it detects by this switch
+  \newif\iflibertine@otf
+  \RequirePackage[libertine,liby,vvarbb]{newtxmath}
+  % keep fontspec from overriding the math setup
+  \PassOptionsToPackage{no-math}{fontspec}
+  \RequirePackage[proportional,osf,tt=false]{libertine}
+  \RequirePackage[scale=0.80]{noto-mono}
+  % URLs in the sans font; since URLs are typeset in math mode, where LuaTeX
+  % does not apply OpenType features in node mode, use base mode for LuaLaTeX
+  \newfontfamily\jnsao@urlfamily{LinBiolinum}[
+    Renderer       = Basic,
+    Extension      = .otf,
+    UprightFont    = *_R,
+    ItalicFont     = *_RI,
+    BoldFont       = *_RB,
+    Numbers        = {OldStyle},
+  ]
+  \renewcommand{\UrlFont}{\normalfont\jnsao@urlfamily}
+\else
+  \RequirePackage[proportional]{libertine}
+  \RequirePackage[libertine,liby,vvarbb]{newtxmath}
+  \RequirePackage[scale=0.80]{noto-mono}
+  \useosf
+  \renewcommand{\UrlFont}{\normalfont\sffamily}
+\fi
 % use the monospaced text font also for \mathtt (in the current encoding)
 \SetMathAlphabet{\mathtt}{normal}{\encodingdefault}{\ttdefault}{\mddefault}{\shapedefault}
 \SetMathAlphabet{\mathtt}{bold}{\encodingdefault}{\ttdefault}{\bfdefault}{\shapedefault}
 \frenchspacing
-\let\normalsfcodes\frenchspacing % also in the output routines
+% also in the output routine (headers and footers); the kernel cannot detect
+% this itself since amsmath redefines \frenchspacing
+\let\normalsfcodes\frenchspacing
 \RequirePackage{microtype}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,9 +140,6 @@
 % Format (sub) figure labels
 \RequirePackage[labelfont={color=structure,sf}]{caption}
 \RequirePackage[labelfont={color=structure,sf}]{subcaption}
-
-% URLs
-\renewcommand{\UrlFont}{\normalfont\sffamily}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Format of theorem-like environments.
@@ -561,10 +586,24 @@
 % review option: line numbers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand*{\jnsao@linenumberfont}{\normalfont\scriptsize\sffamily\color{gray}}
 \if@review
-  \RequirePackage[mathlines]{lineno}
-  \linenumbers
-  \renewcommand{\linenumberfont}{\normalfont\scriptsize\sffamily\color{gray}}
+  \ifluatex
+    \RequirePackage{lualineno}
+    \newcounter{linenumber}
+    \lualineno{
+      define = {
+        name = jnsao
+        toks = {\stepcounter{linenumber}}
+        left = {\jnsao@linenumberfont\thelinenumber\kern 10pt}
+      }
+      set = jnsao
+    }
+  \else
+    \RequirePackage[mathlines]{lineno}
+    \linenumbers
+    \renewcommand{\linenumberfont}{\jnsao@linenumberfont}
+  \fi
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -18,11 +18,12 @@ The latest version can be downloaded as `jnsao.zip` from the
 ## Requirements
 
 A recent TeX distribution (TeX Live 2025 or newer, LaTeX kernel 2025-06-01 or
-newer) and pdfLaTeX. Besides the KOMA-Script bundle, the class uses (among others)
-`amsmath`, `mathtools`, `hyperref`, `caption`/`subcaption`, `zref-clever`,
-`keytheorems`, `datetime2`, `libertine`, `newtx`, `noto`, `microtype`,
-`truncate`, and `xstring`; see `.github/tlpackages` for the full list of TeX Live
-packages needed.
+newer) and either pdfLaTeX or LuaLaTeX. Besides the KOMA-Script bundle, the
+class uses (among others) `amsmath`, `mathtools`, `hyperref`,
+`caption`/`subcaption`, `zref-clever`, `keytheorems`, `datetime2`,
+`libertine`, `newtx`, `noto`, `microtype`, `truncate`, and `xstring`; see
+`.github/tlpackages` for the full list of TeX Live packages needed (the last
+block of which is only needed for LuaLaTeX).
 
 ## Usage
 

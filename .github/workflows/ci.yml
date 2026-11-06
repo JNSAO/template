@@ -17,6 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         texlive: [2025, 2026]
+        engine: [pdflatex, lualatex]
 
     steps:
       - uses: actions/checkout@v7
@@ -29,10 +30,10 @@ jobs:
 
       - name: Build
         run: |
-          latexmk -pdflatex jnsao_template
-          mv jnsao_template.pdf jnsao_template-${{matrix.texlive}}.pdf
+          latexmk -${{matrix.engine}} jnsao_template
+          mv jnsao_template.pdf jnsao_template-${{matrix.engine}}-${{matrix.texlive}}.pdf
 
       - uses: actions/upload-artifact@v7
         with:
-          path: jnsao_template-${{matrix.texlive}}.pdf
+          path: jnsao_template-${{matrix.engine}}-${{matrix.texlive}}.pdf
           archive: false

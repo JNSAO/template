@@ -16,3 +16,7 @@ upquote
 xcolor
 xstring
 zref-clever
+fontspec
+txfonts
+luakeyval
+lualineno
