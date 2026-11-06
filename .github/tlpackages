@@ -2,8 +2,10 @@ scheme-basic latexmk
 koma-script
 caption
 datetime2
+fontaxes
 keytheorems
-libertine
+libertinus
+libertinus-type1
 lineno
 mathtools
 microtype
@@ -17,6 +19,9 @@ xcolor
 xstring
 zref-clever
 fontspec
+libertine
+libertinus-fonts
+libertinus-otf
 txfonts
 luakeyval
 lualineno

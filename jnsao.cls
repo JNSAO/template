@@ -72,34 +72,37 @@
 % Load and set up fonts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Math: newtxmath for both engines, which takes operators and math alphabets
+% (except \mathtt, see below) from the Type 1 Libertinus families (\rmdefault
+% etc.) current at load time.
+% Text: Type 1 Libertinus for pdfLaTeX, OpenType Libertinus for LuaLaTeX.
+% Text uses old-style figures, math lining ones, so old-style figures are only
+% switched on after newtxmath.
 \RequirePackage[T1]{fontenc}
 \RequirePackage{iftex}
 \ifluatex
-  % set up the Type 1 families for newtxmath as libertine would for pdfLaTeX
-  \renewcommand*{\rmdefault}{LinuxLibertineT-LF}
-  \renewcommand*{\sfdefault}{LinuxBiolinumT-LF}
-  % newtxmath uses the semibold weight (as for pdfLaTeX) only if libertine is
-  % already loaded, which it detects by this switch
-  \newif\iflibertine@otf
-  \RequirePackage[libertine,liby,vvarbb]{newtxmath}
+  % set up the Type 1 families for newtxmath as libertinus-type1 would
+  \renewcommand*{\rmdefault}{LibertinusSerif-LF}
+  \renewcommand*{\sfdefault}{LibertinusSans-LF}
+  \RequirePackage[libertinus,liby,vvarbb]{newtxmath}
   % keep fontspec from overriding the math setup
   \PassOptionsToPackage{no-math}{fontspec}
-  \RequirePackage[proportional,osf,tt=false]{libertine}
+  \RequirePackage[proportional,osf,nomath]{libertinus}
   \RequirePackage[scale=0.80]{noto-mono}
-  % URLs in the sans font; since URLs are typeset in math mode, where LuaTeX
-  % does not apply OpenType features in node mode, use base mode for LuaLaTeX
-  \newfontfamily\jnsao@urlfamily{LinBiolinum}[
+% URLs in the sans font; since URLs are typeset in math mode, where LuaTeX
+% does not apply OpenType features in node mode, use base mode for LuaLaTeX
+  \newfontfamily\jnsao@urlfamily{LibertinusSans}[
     Renderer       = Basic,
     Extension      = .otf,
-    UprightFont    = *_R,
-    ItalicFont     = *_RI,
-    BoldFont       = *_RB,
-    Numbers        = {OldStyle},
+    UprightFont    = *-Regular,
+    ItalicFont     = *-Italic,
+    BoldFont       = *-Bold,
+    Numbers        = {OldStyle,Proportional},
   ]
   \renewcommand{\UrlFont}{\normalfont\jnsao@urlfamily}
 \else
-  \RequirePackage[proportional]{libertine}
-  \RequirePackage[libertine,liby,vvarbb]{newtxmath}
+  \RequirePackage[proportional]{libertinus}
+  \RequirePackage[libertinus,liby,vvarbb]{newtxmath}
   \RequirePackage[scale=0.80]{noto-mono}
   \useosf
   \renewcommand{\UrlFont}{\normalfont\sffamily}
@@ -595,7 +598,7 @@
       define = {
         name = jnsao
         toks = {\stepcounter{linenumber}}
-        left = {\jnsao@linenumberfont\thelinenumber\kern 10pt}
+        left = {\jnsao@linenumberfont\LibertinusSansTLF\thelinenumber\kern 10pt}
       }
       set = jnsao
     }
@@ -603,6 +606,7 @@
     \RequirePackage[mathlines]{lineno}
     \linenumbers
     \renewcommand{\linenumberfont}{\jnsao@linenumberfont}
+    \renewcommand\thelinenumber{{\LibertinusSansTLF\arabic{linenumber}}}
   \fi
 \fi
 
