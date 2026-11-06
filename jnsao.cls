@@ -352,8 +352,7 @@
 \newcommand{\manuscriptstatus}[1]{\gdef\jnsao@status{#1}}
 \newcommand{\shortauthor}[1]{\gdef\jnsao@shortauthor{#1}}
 \newcommand{\shorttitle}[1]{\gdef\jnsao@shorttitle{#1}}
-\newcommand{\acknowledgements}[1]{\gdef\jnsao@ack{#1}}
-\newcommand{\acknowledgments}[1]{\gdef\jnsao@ack{#1}}
+\newcommand{\funding}[1]{\gdef\jnsao@ack{#1}}
 
 \def\jnsao@licenseurl#1#2{%
     \expandafter\def\csname jnsao@licenseurl@#1 \endcsname{#2}%
