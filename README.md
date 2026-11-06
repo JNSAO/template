@@ -35,13 +35,17 @@ Start from `jnsao_template.tex`, which also documents all features. In short:
 \shorttitle{Short title}             % for running heads
 \author{Anne Author\thanks{Affiliation, \email{anne@example.org}, \orcid{0000-0000-0000-0000}}}
 \shortauthor{A.~Author}              % for running heads
-\acknowledgements{Funding information.}
+\funding{Funding information.}       % first-page footnote
 
 \begin{document}
 \maketitle
 \begin{abstract}
     The abstract goes here.
 \end{abstract}
+...
+\section*{Acknowledgments}           % other acknowledgments (optional)
+...
+\appendix
 ...
 \bibliographystyle{jnsao}
 \bibliography{references}
@@ -55,6 +59,14 @@ Start from `jnsao_template.tex`, which also documents all features. In short:
 All other options are passed to `scrartcl`; note that paper size, font size, and
 type area are fixed by the class.
 
+### Acknowledgments
+
+Funding information (grants, funding agencies) and similar formal acknowledgments
+are given with `\funding{...}` in the preamble and typeset as an unmarked footnote on
+the first page. All other acknowledgments (e.g., thanking colleagues, declaring the
+use of AI tools) belong in an unnumbered section `\section*{Acknowledgments}` after
+the main text and before the appendix.
+
 ### Publication information
 
 The following commands set the information shown in the page headers. Most
@@ -62,7 +74,8 @@ of them are only to be filled in once the article has been accepted.
 
 | Command | Description |
 | --- | --- |
-| `\manuscriptsubmitted{yyyy-mm-dd}` | submission date (shown instead of the current date on the first page) |
+| `\date{yyyy-mm-dd}` | date shown in the header before acceptance (default: current date) |
+| `\manuscriptsubmitted{yyyy-mm-dd}` | submission date (shown on the first page after acceptance) |
 | `\manuscriptaccepted{yyyy-mm-dd}` | acceptance date |
 | `\manuscriptvolume{...}`, `\manuscriptnumber{...}`, `\manuscriptyear{...}` | volume, article number, and year |
 | `\manuscriptdoi{...}` | DOI of the published article |
@@ -76,7 +89,9 @@ The environments `theorem`, `proposition`, `lemma`, `corollary`, `definition`,
 
 References are handled by `zref-clever` (use `\zcref`); for compatibility with
 `cleveref`, the commands `\cref`, `\Cref`, `\crefrange`, and `\Crefrange` are
-provided. Do not load `cleveref` yourself.
+provided. Do not load `cleveref` yourself. The reference format should not be
+changed; for labels of additional counters, define the reference names with
+`\zcRefTypeSetup` (see the template).
 
 ### Bibliography
 

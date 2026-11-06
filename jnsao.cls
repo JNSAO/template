@@ -163,12 +163,6 @@
     Name-pl = ,
     name-pl = ,
 }
-\zcRefTypeSetup{algocf}{
-    Name-sg = Algorithm ,
-    name-sg = algorithm ,
-    Name-pl = Algorithms ,
-    name-pl = algorithms ,
-}
 
 % set up theorems (including zref hooks)
 \RequirePackage[overload]{keytheorems}
