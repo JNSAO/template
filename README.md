@@ -36,6 +36,8 @@ Start from `jnsao_template.tex`, which also documents all features. In short:
 \author{Anne Author\thanks{Affiliation, \email{anne@example.org}, \orcid{0000-0000-0000-0000}}}
 \shortauthor{A.~Author}              % for running heads
 \funding{Funding information.}       % first-page footnote
+\keywords{first, second}             % optional
+\msc{49J52, 90C25}                   % optional
 
 \begin{document}
 \maketitle
@@ -58,6 +60,12 @@ Start from `jnsao_template.tex`, which also documents all features. In short:
 
 All other options are passed to `scrartcl`; note that paper size, font size, and
 type area are fixed by the class.
+
+### Keywords and MSC codes
+
+The optional commands `\keywords{...}` and `\msc{...}` (Mathematics Subject
+Classification) take comma-separated lists, which are printed at the end of the
+abstract if not empty.
 
 ### Acknowledgments
 

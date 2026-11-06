@@ -503,6 +503,37 @@
   \vskip 2em
 }%
 
+% Keywords and MSC codes: comma-separated lists, printed after the abstract
+% separated by \cdot; MSC codes are linked to their MathSciNet description
+\providecommand{\keywordsname}{Keywords}
+\providecommand{\mscname}{MSC (2020)}
+\newcommand*{\jnsao@msclink}[1]{%
+    \href{https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=#1}%
+        {\sffamily\scshape\MakeLowercase{#1}}%
+}
+\ExplSyntaxOn
+\seq_new:N \g__jnsao_keywords_seq
+\seq_new:N \g__jnsao_msc_seq
+\NewDocumentCommand \keywords { m } { \seq_gset_from_clist:Nn \g__jnsao_keywords_seq {#1} }
+\NewDocumentCommand \msc { m } { \seq_gset_from_clist:Nn \g__jnsao_msc_seq {#1} }
+% #1: heading, #2: list, #3: function applied to each item
+\cs_new_protected:Npn \__jnsao_print_list:nNN #1#2#3
+  {
+    \seq_if_empty:NF #2
+      {
+        \par \medskip \noindent
+        { \normalfont \sectfont \nobreak #1 \quad }
+        \seq_set_map:NNn \l_tmpa_seq #2 { #3 {##1} }
+        \seq_use:Nn \l_tmpa_seq { \nobreakspace $\cdot$ \c_space_tl }
+      }
+  }
+\cs_new_protected:Npn \jnsao@printkeywords
+  {
+    \__jnsao_print_list:nNN { \keywordsname } \g__jnsao_keywords_seq \use:n
+    \__jnsao_print_list:nNN { \mscname } \g__jnsao_msc_seq \jnsao@msclink
+  }
+\ExplSyntaxOff
+
 % Set up abstract formatting
 \renewenvironment{abstract}{%
     \vspace*{-0.75cm}
@@ -511,6 +542,7 @@
     \noindent%
     {\normalfont\sectfont\nobreak\abstractname\quad}%
     }{%
+    \jnsao@printkeywords
     \endquotation%
     \vskip 0.7cm
 }
@@ -523,7 +555,7 @@
 \providecommand{\hal}[1]{\href{https://hal.archives-ouvertes.fr/#1}{#1}}
 \providecommand{\doi}[1]{\mbox{\scshape\sffamily doi:}\,\href{https://doi.org/#1}{\detokenize{#1}}}
 \providecommand{\orcid}[1]{\mbox{\scshape\sffamily orcid:}\,\href{https://orcid.org/#1}{\detokenize{#1}}}
-\providecommand\email[1]{\href{mailto:#1}{\sffamily#1}}
+\providecommand{\email}[1]{\href{mailto:#1}{\sffamily#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % review option: line numbers

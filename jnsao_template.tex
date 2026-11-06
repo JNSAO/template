@@ -79,6 +79,11 @@
     Longer funding statements may span several paragraphs.
 }
 
+% Keywords and MSC 2020 codes (optional, comma-separated; printed after the
+% abstract).
+\keywords{nonsmooth analysis, optimization, \LaTeX{} template}
+\msc{49J52, 90C25, 68U15}
+
 % Date shown in the header (optional; default: today). Use yyyy-mm-dd format.
 %\date{2026-01-15}
 
@@ -139,6 +144,8 @@ The following commands are given in the preamble; the title block is then produc
     \item[\cs{funding}\{\dots\}] Funding information (grants and funding agencies) and similar formal acknowledgments (e.g., required by a funding agency or institution), typeset as an unmarked footnote on the first page. May contain several paragraphs.
 \end{description}
 All other acknowledgments (e.g., thanking colleagues or reviewers, or declaring the use of AI tools) belong in an unnumbered section \verb!\section*{Acknowledgments}! after the main text and before the appendix (see the end of this document).
+
+The optional commands \verb!\keywords{...}! and \verb!\msc{...}! take a comma-separated list of keywords (in lower case) and of Mathematics Subject Classification codes (see \url{https://msc2020.org}), respectively. They are printed at the end of the abstract if not empty. Neither keywords nor MSC codes are required for submission.
 
 Until publication, the page header shows the status ``Manuscript'' and the current date (in ISO format). Optionally, the header can be changed by
 \begin{description}
