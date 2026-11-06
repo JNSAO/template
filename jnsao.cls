@@ -317,7 +317,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage[style=iso]{datetime2}
-\def\jnsao@insertdate{\DTMtoday}
+\def\jnsao@insertdate{\@date}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Publication information
