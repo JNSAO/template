@@ -327,11 +327,12 @@ Use Bib\TeX{} with the provided style \pkg{jnsao.bst} by adding
 \bibliographystyle{jnsao}
 \bibliography{<your .bib file>}
 \end{verbatim}
-at the end of the document (not \pkg{biblatex}). Cite as usual with \cs{cite}, e.g., \cite{Lamport:1994,Rockafellar:1976}. Compared to standard styles, \pkg{jnsao.bst} has the following features:
+at the end of the document (not \pkg{biblatex}). Cite as usual with \cs{cite}, e.g., \cite{Lamport:1994,Rockafellar:1976}; further examples are a monograph \cite{Bauschke:2017}, a volume in a series \cite{Clarke:1990}, a conference paper \cite{Author:2021}, a chapter in an edited volume \cite{Coauthor:2022}, a thesis \cite{Student:2023}, and software \cite{Author:2024}, using the \pkg{biblatex} entry type \texttt{@software} and the field \texttt{version} (see \pkg{jnsao\_template.bib} for the corresponding entries). Compared to standard styles, \pkg{jnsao.bst} has the following features:
 \begin{enumerate}
     \item The case of titles is \emph{not} changed. Use \emph{Title Case} for journal, book, and thesis titles, and \emph{Sentence case} for articles, chapters, etc. Proper names need not be protected by braces.
-    \item The \pkg{biblatex} fields \texttt{date} and \texttt{journaltitle} are accepted instead of \texttt{year} and \texttt{journal} (see \cite{Rockafellar:1976}).
-    \item The field \texttt{doi} should contain only the DOI (without \texttt{https://doi.org/}); it is linked automatically. Give a \texttt{url} (and optionally \texttt{urldate}) only if there is no DOI.
+    \item The \pkg{biblatex} fields \texttt{date} and \texttt{journaltitle} are accepted instead of \texttt{year} and \texttt{journal} (see \cite{Rockafellar:1976}); of a full date such as \texttt{2019-06-19}, only the year is used. The month is never printed.
+    \item Articles are given as journal, volume (year), and pages (the issue number is not printed), e.g., \cite{Rockafellar:1976}.
+    \item The field \texttt{doi} should contain the DOI, which is linked automatically (a leading \texttt{https://doi.org/} or \texttt{doi:} is removed). Give a \texttt{url} (and optionally \texttt{urldate}) only if there is no DOI.
     \item Preprints on arXiv or HAL are supported via the fields \texttt{eprinttype} (\texttt{arxiv} or \texttt{hal}), \texttt{eprint} (the identifier), and \texttt{version} (always cite a specific version), for example
 \begin{verbatim}
 @article{Author:2019,
@@ -344,7 +345,7 @@ at the end of the document (not \pkg{biblatex}). Cite as usual with \cs{cite}, e
     version = {1},
 }
 \end{verbatim}
-        which gives \cite{Author:2019}; similarly for HAL \cite{Author:2019a}.
+        which gives \cite{Author:2019}. The field \texttt{archiveprefix} used by the Bib\TeX{} export of arXiv is accepted instead of \texttt{eprinttype} \cite{Author:2020}. For HAL, give the full identifier including its prefix, e.g., \texttt{eprint = \{hal-00000001\}} \cite{Author:2019a}.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

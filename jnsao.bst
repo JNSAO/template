@@ -5,7 +5,7 @@
 %
 %    Journal of Nonsmooth Analysis and Optimization
 %
-% Web: http://jnsao.episciences.org
+% Web: https://jnsao.episciences.org
 % E-mail: jnsao@episciences.org
 %
 % This work may be distributed and/or modified under the
@@ -20,7 +20,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Version 0.8 (2019-06-19).
+% Version 1.0 (2026-11-17).
 % Based on BibTeX standard bibliography style `abbrv'.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,7 +37,6 @@ ENTRY
     institution
     journal
     key
-    month
     note
     number
     organization
@@ -49,10 +48,12 @@ ENTRY
     type
     volume
     year
-    doi          % only doi; https://dx.doi.org is added later
+    doi          % only doi; https://doi.org/ is added (and stripped if given)
     eprinttype   % repository: currently, arxiv or hal are supported
-    eprint       % eprint ID as in repository URL
-    version      % eprint version, appended as, e.g., `v1` to URL
+    archiveprefix % alias for eprinttype (used by arXiv's BibTeX export)
+    eprint       % eprint ID as in repository URL (e.g., hal-01234567)
+    version      % eprint version, appended as, e.g., `v1` to URL;
+                 % software version (if there is no eprint)
     url          % external URL if neither doi nor eprint is available
     urldate      % date visited (for web pages etc.)
     date         % futureproof: biblatex uses date over year
@@ -61,16 +62,15 @@ ENTRY
 {}
 { label }
 
-INTEGERS { output.state before.all mid.sentence after.sentence after.block }
+INTEGERS { output.state before.all mid.sentence after.block }
 
 FUNCTION {init.state.consts}
 { #0 'before.all :=
     #1 'mid.sentence :=
-    #2 'after.sentence :=
-    #3 'after.block :=
+    #2 'after.block :=
 }
 
-STRINGS { s t }
+STRINGS { s t u v }
 
 FUNCTION {output.nonnull}
 { 's :=
@@ -81,11 +81,7 @@ FUNCTION {output.nonnull}
             newline$
             "\newblock " write$
         }
-        { output.state before.all =
-            'write$
-            { add.period$ " " * write$ }
-            if$
-        }
+        'write$
         if$
         mid.sentence 'output.state :=
     }
@@ -106,10 +102,6 @@ FUNCTION {output.check}
     { pop$ "empty " t * " in " * cite$ * warning$ }
     'output.nonnull
     if$
-}
-
-FUNCTION {add.blank}
-{  " " * before.all 'output.state :=
 }
 
 FUNCTION {output.bibitem}
@@ -135,17 +127,6 @@ FUNCTION {new.block}
     if$
 }
 
-FUNCTION {new.sentence}
-{ output.state after.block =
-    'skip$
-    { output.state before.all =
-        'skip$
-        { after.sentence 'output.state := }
-        if$
-    }
-    if$
-}
-
 FUNCTION {not}
 {   { #0 }
     { #1 }
@@ -164,13 +145,6 @@ FUNCTION {or}
     if$
 }
 
-FUNCTION {new.block.checka}
-{ empty$
-    'skip$
-    'new.block
-    if$
-}
-
 FUNCTION {new.block.checkb}
 { empty$
     swap$ empty$
@@ -180,33 +154,10 @@ FUNCTION {new.block.checkb}
     if$
 }
 
-FUNCTION {new.sentence.checka}
-{ empty$
-    'skip$
-    'new.sentence
-    if$
-}
-
-FUNCTION {new.sentence.checkb}
-{ empty$
-    swap$ empty$
-    and
-    'skip$
-    'new.sentence
-    if$
-}
-
 FUNCTION {field.or.null}
 { duplicate$ empty$
     { pop$ "" }
     'skip$
-    if$
-}
-
-FUNCTION {smallcaps}
-{ duplicate$ empty$
-    { pop$ "" }
-    { "\textsc{" swap$ * "}" * }
     if$
 }
 
@@ -219,13 +170,41 @@ FUNCTION {emphasize}
 
 INTEGERS { nameptr namesleft numnames }
 
+% replace ties and spaces (between initials) by thin spaces
+FUNCTION {thin.initials}
+{ 'v :=
+    ""
+    { v empty$ not }
+    { v #1 #1 substring$
+        duplicate$ duplicate$ "~" = swap$ " " = or
+        { pop$ "\," }
+        'skip$
+        if$
+        *
+        v #2 global.max$ substring$ 'v :=
+    }
+    while$
+}
+
+% initials separated by thin spaces (keeping hyphens, e.g., J.-P.), followed
+% by an unbreakable space before the last name
+FUNCTION {format.name}
+{ 'u :=
+    duplicate$ u swap$ "{f.}" format.name$ thin.initials
+    duplicate$ empty$
+    'skip$
+    { "\nobreak\kern 0.33333em " * }
+    if$
+    swap$ u swap$ "{vv~}{ll}{, jj}" format.name$ *
+}
+
 FUNCTION {format.names}
 { 's :=
     #1 'nameptr :=
     s num.names$ 'numnames :=
     numnames 'namesleft :=
     { namesleft #0 > }
-    { s nameptr "{f{.\,}{.\nobreak\kern 0.33333em}}{vv~}{ll}{, jj}" format.name$ 't :=
+    { nameptr s format.name 't :=
         nameptr #1 >
         { namesleft #1 >
             { ", " * t * }
@@ -299,11 +278,15 @@ FUNCTION {n.dashify}
     while$
 }
 
+% year, or the year part of date (yyyy-mm-dd), or empty
 FUNCTION {year.or.date}
-{
-    year empty$
-    {date}
-    {year}
+{ year empty$
+    { date empty$
+        { "" }
+        { date #1 #4 substring$ }
+        if$
+    }
+    'year
     if$
 }
 
@@ -317,29 +300,40 @@ FUNCTION {format.journal}
 }
 
 FUNCTION {format.date}
-{
-    ""
-    duplicate$ empty$
-    year.or.date duplicate$ empty$
-    { swap$ 'skip$
-        { "there's a month but no year in " cite$ * warning$ }
+{ year.or.date }
+
+% "volume (year)", omitting empty parts
+FUNCTION {format.vol.year}
+{ volume field.or.null
+    format.date duplicate$ empty$
+    'pop$
+    { "(" swap$ * ")" *
+        swap$ duplicate$ empty$
+        'pop$
+        { " " * swap$ * }
         if$
-        *
-    }
-    { swap$ 'skip$
-        {
-            swap$
-            " " * swap$
-        }
-        if$
-        *
     }
     if$
 }
 
-FUNCTION {format.vol.year}
-{ volume field.or.null
-    " (" format.date * ")" * * 
+% append " (year)" to the string on the stack if there is a year
+FUNCTION {add.paren.date}
+{ format.date duplicate$ empty$
+    'pop$
+    { " (" swap$ * ")" * * }
+    if$
+}
+
+% "Journal volume (year)" (journal empty: empty)
+FUNCTION {format.journal.vol.year}
+{ format.journal duplicate$ empty$
+    'skip$
+    { format.vol.year duplicate$ empty$
+        'pop$
+        { " " swap$ * * }
+        if$
+    }
+    if$
 }
 
 
@@ -406,57 +400,10 @@ FUNCTION {format.edition}
     if$
 }
 
-INTEGERS { multiresult }
-
-FUNCTION {multi.page.check}
-{ 't :=
-    #0 'multiresult :=
-    { multiresult not
-        t empty$ not
-        and
-    }
-    { t #1 #1 substring$
-        duplicate$ "-" =
-        swap$ duplicate$ "," =
-        swap$ "+" =
-        or or
-        { #1 'multiresult := }
-        { t #2 global.max$ substring$ 't := }
-        if$
-    }
-    while$
-    multiresult
-}
-
 FUNCTION {format.pages}
 { pages empty$
     { "" }
-    { pages multi.page.check
-        { "" pages n.dashify tie.or.space.connect }
-        { "" pages tie.or.space.connect }
-        if$
-    }
-    if$
-}
-
-FUNCTION {format.vol.num.pages}
-{ volume field.or.null
-    number empty$
-    'skip$
-    { "(" number * ")" * *
-        volume empty$
-        { "there's a number but no volume in " cite$ * warning$ }
-        'skip$
-        if$
-    }
-    if$
-    pages empty$
-    'skip$
-    { duplicate$ empty$
-        { pop$ format.pages }
-        { ":" * pages n.dashify * }
-        if$
-    }
+    { pages n.dashify }
     if$
 }
 
@@ -489,8 +436,8 @@ FUNCTION {format.in.ed.booktitle}
 
 FUNCTION {empty.misc.check}
 { author empty$ title empty$ howpublished empty$
-    month empty$ year empty$ note empty$
-    and and and and and
+    format.date empty$ note empty$
+    and and and and
     key empty$ not and
     { "all relevant fields are empty in " cite$ * warning$ }
     'skip$
@@ -515,21 +462,6 @@ FUNCTION {format.tr.number}
     { "t" change.case$ }
     { number tie.or.space.connect }
     if$
-}
-
-FUNCTION {format.article.crossref}
-{ key empty$
-    { journal empty$
-        { "need key or journal for " cite$ * " to crossref " * crossref *
-            warning$
-            ""
-        }
-        { "in \emph{" journal * "\/}" * }
-        if$
-    }
-    { "in " key * }
-    if$
-    " \cite{" * crossref * "}" *
 }
 
 FUNCTION {format.crossref.editor}
@@ -611,39 +543,91 @@ FUNCTION {eprint.version}
     if$
 }
 
+% full HAL identifier, e.g., hal-01234567 (prefix hal- added to bare numbers)
+FUNCTION {hal.id}
+{ eprint.version
+    eprint #1 #1 substring$ chr.to.int$
+    duplicate$ #47 > swap$ #58 < and
+    { "hal-" swap$ * }
+    'skip$
+    if$
+}
+
 FUNCTION {format.hal}
 { eprint empty$
     { "" }
-    { "\href{https://hal.archives-ouvertes.fr/" eprint.version * 
-        "}{\nolinkurl{hal-" * eprint.version "L" change.case$ * "}}" * 
-    }
+    { "\href{https://hal.science/" hal.id * "}{\nolinkurl{" * hal.id * "}}" * }
     if$
 }
 
 FUNCTION {format.arxiv}
 { eprint empty$
     { "" }
-    { "\href{https://arxiv.org/abs/" eprint.version * 
-        "}{\nolinkurl{arXiv:" * eprint.version * "}}" * 
+    { "\href{https://arxiv.org/abs/" eprint.version *
+        "}{\nolinkurl{arXiv:" * eprint.version * "}}" *
     }
     if$
 }
 
-FUNCTION {format.eprint}
+% eprinttype, or archiveprefix, in lower case
+FUNCTION {eprint.type}
 { eprinttype empty$
+    { archiveprefix field.or.null }
+    'eprinttype
+    if$
+    "l" change.case$
+}
+
+% eprint without type: arXiv (for compatibility); unknown type: plain text
+FUNCTION {format.eprint}
+{ eprint empty$
     { "" }
-    { eprinttype "l" change.case$ "hal" =
-       { format.hal }
-       { format.arxiv }
-       if$
+    { eprint.type duplicate$ "hal" =
+        { pop$ format.hal }
+        { duplicate$ "arxiv" = swap$ empty$ or
+            { format.arxiv }
+            { "unsupported eprinttype " eprint.type * " in " * cite$ * warning$
+                "\nolinkurl{" eprint.type * ":" * eprint.version * "}" *
+            }
+            if$
+        }
+        if$
     }
     if$
+}
+
+% remove the prefix on the stack from u if present (ignoring case)
+FUNCTION {chop.prefix}
+{ 't :=
+    u #1 t text.length$ substring$ "l" change.case$ t =
+    { u t text.length$ #1 + global.max$ substring$ 'u := }
+    'skip$
+    if$
+}
+
+% DOI without resolver or doi: prefix, in lower case (DOIs are case-insensitive)
+FUNCTION {clean.doi}
+{ doi 'u :=
+    "https://doi.org/" chop.prefix
+    "http://doi.org/" chop.prefix
+    "https://dx.doi.org/" chop.prefix
+    "http://dx.doi.org/" chop.prefix
+    "doi:" chop.prefix
+    u "l" change.case$
 }
 
 FUNCTION {format.doi}
 { doi empty$
     { "" }
-    { "\href{https://doi.org/" doi * "}{\nolinkurl{doi:" * doi "l" change.case$ * "}}" * }
+    { "\href{https://doi.org/" clean.doi * "}{\nolinkurl{doi:" * clean.doi * "}}" * }
+    if$
+}
+
+% software version (version is the eprint version if there is an eprint)
+FUNCTION {format.version}
+{ version empty$ eprint empty$ not or
+    { "" }
+    { "version " version * }
     if$
 }
 
@@ -662,8 +646,7 @@ FUNCTION {article}
 { output.bibitem
     format.authors "author" output.check
     format.title "title" output.check
-    format.journal "journal" output.check add.blank
-    format.vol.year output
+    format.journal.vol.year "journal" output.check
     format.pages output
     format.doi output
     format.eprint output
@@ -689,6 +672,8 @@ FUNCTION {book}
     format.edition output
     format.date output
     format.doi output
+    format.eprint output
+    format.url output
     new.block
     note output
     fin.entry
@@ -703,6 +688,7 @@ FUNCTION {booklet}
     address output
     format.date output
     format.doi output
+    format.eprint output
     format.url output
     new.block
     note output
@@ -754,9 +740,7 @@ FUNCTION {incollection}
         format.edition output
         format.date "year" output.check
     }
-    { format.incoll.inproc.crossref output.nonnull
-        format.chapter.pages output
-    }
+    { format.incoll.inproc.crossref output.nonnull }
     if$
     format.chapter.pages output
     format.doi output
@@ -893,6 +877,8 @@ FUNCTION {techreport}
     institution "institution" output.check
     address output
     format.date "year" output.check
+    format.doi output
+    format.eprint output
     format.url output
     new.block
     note output
@@ -902,8 +888,11 @@ FUNCTION {techreport}
 FUNCTION {unpublished}
 { output.bibitem
     format.authors "author" output.check
-    format.title "title" output.check add.blank
-    format.vol.year output
+    format.title duplicate$ empty$
+    'skip$
+    'add.paren.date
+    if$
+    "title" output.check
     format.eprint output
     format.url output
     new.block
@@ -916,6 +905,7 @@ FUNCTION {misc}
     format.authors output
     format.title output
     howpublished output
+    format.version output
     format.date output
     format.doi output
     format.eprint output
@@ -925,6 +915,8 @@ FUNCTION {misc}
     fin.entry
     empty.misc.check
 }
+
+FUNCTION {software} { misc }
 
 FUNCTION {default.type} { misc }
 
@@ -1084,7 +1076,7 @@ FUNCTION {presort}
     if$
     "    "
     *
-    year field.or.null sortify
+    format.date sortify
     *
     "    "
     *

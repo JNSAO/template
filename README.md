@@ -106,7 +106,8 @@ changed; for labels of additional counters, define the reference names with
 Use BibTeX with the provided `jnsao.bst`. Note that the case of titles is *not*
 adjusted, so use Title Case for journal, book, and thesis titles and Sentence case
 for articles and chapters. Preprints on arXiv and HAL are supported via the
-`eprinttype` and `eprint` fields; see the template for details.
+`eprinttype` (or `archiveprefix`) and `eprint` fields; see the template for
+details.
 
 ## Submitting to arXiv
 
