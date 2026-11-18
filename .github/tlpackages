@@ -1,9 +1,9 @@
 scheme-basic latexmk
-koma-script
-caption
 datetime2
+fontaxes
 keytheorems
-libertine
+libertinus
+libertinus-type1
 lineno
 mathtools
 microtype
@@ -11,12 +11,15 @@ mweights
 newtx
 noto
 translations
-truncate
 upquote
 xcolor
 xstring
 zref-clever
 fontspec
-txfonts
+libertine
+libertinus-fonts
+libertinus-otf
+lua-unicode-math
+unicode-math
 luakeyval
 lualineno

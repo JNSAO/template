@@ -7,7 +7,7 @@ LaTeX class and BibTeX style for submissions to the
 
 | File | Purpose |
 | --- | --- |
-| `jnsao.cls` | document class (based on KOMA-Script `scrartcl`) |
+| `jnsao.cls` | document class (based on the standard `article` class) |
 | `jnsao.bst` | BibTeX bibliography style |
 | `jnsao_template.tex`, `jnsao_template.bib` | template and documentation of the class |
 | `00README.json` | configuration file for submissions to arXiv (see below) |
@@ -18,12 +18,15 @@ The latest version can be downloaded as `jnsao.zip` from the
 ## Requirements
 
 A recent TeX distribution (TeX Live 2025 or newer, LaTeX kernel 2025-06-01 or
-newer) and either pdfLaTeX or LuaLaTeX. Besides the KOMA-Script bundle, the
-class uses (among others) `amsmath`, `mathtools`, `hyperref`,
-`caption`/`subcaption`, `zref-clever`, `keytheorems`, `datetime2`,
-`libertine`, `newtx`, `noto`, `microtype`, `truncate`, and `xstring`; see
-`.github/tlpackages` for the full list of TeX Live packages needed (the last
-block of which is only needed for LuaLaTeX).
+newer) and either pdfLaTeX or LuaLaTeX. The class is based on `article` and
+uses (among others) `geometry`, `fancyhdr`, `amsmath`, `mathtools`,
+`hyperref`, `zref-clever`, `keytheorems`, `datetime2`, `libertinus`, `newtx`,
+`noto`, `microtype`, and `xstring`; see `.github/tlpackages` for the full list
+of TeX Live packages needed (the last block of which is only needed for
+LuaLaTeX).
+
+Tagged PDF (enabled by `\DocumentMetadata{tagging=on, ...}` before
+`\documentclass`) is supported with LuaLaTeX only.
 
 ## Usage
 
@@ -59,7 +62,7 @@ Start from `jnsao_template.tex`, which also documents all features. In short:
 
 - `review`: add line numbers for easier reference in review reports.
 
-All other options are passed to `scrartcl`; note that paper size, font size, and
+All other options are passed to `article`; note that paper size, font size, and
 type area are fixed by the class.
 
 ### Keywords and MSC codes
